@@ -21,7 +21,7 @@
    </extensions>
 
    <actions>
-      <action id="fluentbuilder.action.createBuilderAction" class="me.prouge.fluentbuilder.actions.CreateBuilderAction" text="Fluent Builder" description="TBD-1">
+      <action id="fluentbuilder.action.createBuilderAction" class="me.prouge.fluentbuilder.actions.CreateBuilderAction" text="Fluent Builder" description="Navigate Action">
          <add-to-group group-id="GenerateGroup" anchor="first"/>
       </action>
    </actions>
