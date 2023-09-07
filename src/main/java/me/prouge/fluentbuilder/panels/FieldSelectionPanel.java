@@ -34,7 +34,7 @@ public class FieldSelectionPanel extends DialogWrapper {
       this.ownerClass = ownerClass;
       fieldList = loadClassFields(ownerClass);
       setSize(600, 400);
-      setTitle("Select fields for the fluent builder (optional fields can be explicitly selected later)");
+      setTitle("Select fields for the Sealed Fluent Builder (optional fields can be explicitly selected later)");
       init();
    }
 

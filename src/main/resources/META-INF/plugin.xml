@@ -2,7 +2,7 @@
    <id>me.prouge.FluentBuilder</id>
    <depends>com.intellij.modules.java</depends>
    <depends>com.intellij.java</depends>
-   <name>FluentBuilder</name>
+   <name>Sealed Fluent Builder</name>
 
    <version>0.2</version>
 
@@ -11,7 +11,26 @@
    <vendor email="justcrout@gmail.com" url="https://github.com/Powershooter83">Powershooter83</vendor>
 
    <description><![CDATA[
-    Plugin to generate the Fluent Builder pattern. With optional and required fields.<br>
+<body>
+    <h1>Description</h1>
+
+    <p>The <strong>Sealed Fluent Builder Pattern Generator</strong> Plugin for IntelliJ offers an effortless way to use the Sealed Fluent Builder Pattern in your Java code. This plugin allows you to automatically generate builder classes for your Java classes, allowing you to select both required and optional fields and define their order.</p>
+
+    <p><strong>Key Features:</strong></p>
+
+    <ul>
+        <li><strong>Automatic Generation:</strong> Automatically create builder classes for your Java classes.</li>
+        <li><strong>Flexible Configuration:</strong> Choose required and optional fields and define the order in which they should be set in the builder.</li>
+        <li><strong>Seamless Integration:</strong> Access the plugin via the familiar IntelliJ "Generate" menu.</li>
+        <li><strong>Time Savings:</strong> Accelerate development by automating repetitive tasks.</li>
+    </ul>
+
+
+
+    <p>With the <strong>Sealed Fluent Builder Pattern Generator</strong> Plugin for IntelliJ, you can boost productivity while ensuring your code remains well-structured and easily maintainable.</p>
+
+    <p><strong>Note:</strong> This plugin is particularly useful for working with sealed classes and significantly enhances the readability and maintainability of your Java code.</p>
+</body>
 ]]></description>
 
    <depends>com.intellij.modules.platform</depends>
