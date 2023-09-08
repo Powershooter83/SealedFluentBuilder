@@ -1,10 +1,10 @@
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.10.1"
+    id("org.jetbrains.intellij") version "1.15.0"
 }
 
 group = "me.prouge"
-version = "0.2"
+version = "0.3"
 
 repositories {
     mavenCentral()

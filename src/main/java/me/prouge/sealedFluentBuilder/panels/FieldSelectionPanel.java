@@ -1,11 +1,5 @@
 package me.prouge.sealedFluentBuilder.panels;
 
-import static com.intellij.openapi.ui.LabeledComponent.create;
-import static com.intellij.ui.ToolbarDecorator.createDecorator;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JComponent;
-
 import com.intellij.ide.util.DefaultPsiElementCellRenderer;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
@@ -16,70 +10,73 @@ import com.intellij.psi.PsiField;
 import com.intellij.ui.CollectionListModel;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBList;
+import me.prouge.sealedFluentBuilder.utils.I18n;
+import me.prouge.sealedFluentBuilder.utils.Message;
+
+import javax.swing.*;
+
+import static com.intellij.openapi.ui.LabeledComponent.create;
+import static com.intellij.ui.ToolbarDecorator.createDecorator;
 
 public class FieldSelectionPanel extends DialogWrapper {
 
-   private final JBList<PsiField> fieldList;
+    final PsiClass ownerClass;
+    final Project project;
+    final Editor editor;
+    private final JBList<PsiField> fieldList;
 
-   final PsiClass ownerClass;
+    public FieldSelectionPanel(final Project project, final Editor editor, final PsiClass ownerClass) {
+        super(ownerClass.getProject());
+        this.project = project;
+        this.editor = editor;
+        this.ownerClass = ownerClass;
+        fieldList = loadClassFields(ownerClass);
+        setSize(600, 400);
+        setTitle(I18n.getMessage(Message.SELECTION_TITLE));
+        init();
+    }
 
-   final Project project;
+    @Override
+    protected void init() {
+        super.init();
+    }
 
-   final Editor editor;
+    private JBList<PsiField> loadClassFields(final PsiClass ownerClass) {
+        CollectionListModel<PsiField> fields = new CollectionListModel<>(ownerClass.getFields());
+        JBList<PsiField> fieldsList = new JBList<>(fields);
+        fieldsList.setCellRenderer(new DefaultPsiElementCellRenderer());
+        return fieldsList;
+    }
 
-   public FieldSelectionPanel(final Project project, final Editor editor, final PsiClass ownerClass) {
-      super(ownerClass.getProject());
-      this.project = project;
-      this.editor = editor;
-      this.ownerClass = ownerClass;
-      fieldList = loadClassFields(ownerClass);
-      setSize(600, 400);
-      setTitle("Select fields for the Sealed Fluent Builder (optional fields can be explicitly selected later)");
-      init();
-   }
+    private ToolbarDecorator createToolbar() {
+        ToolbarDecorator decorator = createDecorator(fieldList);
+        decorator.disableAddAction();
+        decorator.disableRemoveAction();
+        decorator.disableUpDownActions();
+        return decorator;
+    }
 
-   @Override
-   protected void init() {
-      super.init();
-   }
+    @Override
+    protected void doOKAction() {
+        if (getFields().size() < 2) {
+            Messages.showErrorDialog(I18n.getMessage(Message.SELECTED_FIELDS_ERROR), "");
+        } else {
+            super.doOKAction();
+            new FieldArrangementPanel(project, editor, ownerClass, getFields()).show();
+        }
+    }
 
-   private JBList<PsiField> loadClassFields(final PsiClass ownerClass) {
-      CollectionListModel<PsiField> fields = new CollectionListModel<>(ownerClass.getFields());
-      JBList<PsiField> fieldsList = new JBList<>(fields);
-      fieldsList.setCellRenderer(new DefaultPsiElementCellRenderer());
-      return fieldsList;
-   }
+    @Override
+    protected JComponent createCenterPanel() {
+        return create(createToolbar().createPanel(), I18n.getMessage(Message.SELECTION_TITLE));
+    }
 
-   private ToolbarDecorator createToolbar() {
-      ToolbarDecorator decorator = createDecorator(fieldList);
-      decorator.disableAddAction();
-      decorator.disableRemoveAction();
-      decorator.disableUpDownActions();
-      return decorator;
-   }
-
-   @Override
-   protected void doOKAction() {
-      if(getFields().size() < 2) {
-         Messages.showErrorDialog("At least two fields must be selected!", "");
-      }else {
-         super.doOKAction();
-         new FieldArrangementPanel(project, editor, ownerClass, getFields()).show();
-      }
-
-   }
-
-   @Override
-   protected JComponent createCenterPanel() {
-      return create(createToolbar().createPanel(), "Available fields");
-   }
-
-   public DefaultListModel<PsiField> getFields() {
-      DefaultListModel<PsiField> model = new DefaultListModel<>();
-      for (PsiField field : fieldList.getSelectedValuesList()) {
-         model.addElement(field);
-      }
-      return model;
-   }
+    public DefaultListModel<PsiField> getFields() {
+        DefaultListModel<PsiField> model = new DefaultListModel<>();
+        for (PsiField field : fieldList.getSelectedValuesList()) {
+            model.addElement(field);
+        }
+        return model;
+    }
 
 }

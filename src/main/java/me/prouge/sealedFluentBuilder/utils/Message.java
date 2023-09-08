@@ -1,0 +1,14 @@
+package me.prouge.sealedFluentBuilder.utils;
+
+public enum Message {
+
+    SELECTION_TITLE,
+    ARRANGEMENT_TITLE,
+    REQUIRED_FIELDS_ERROR,
+    SELECTED_FIELDS_ERROR,
+    REQUIRED_FIELDS_LABEL,
+    OPTIONAL_FIELDS_LABEL,
+    AVAILABLE_FIELDS_LABEL
+
+
+}

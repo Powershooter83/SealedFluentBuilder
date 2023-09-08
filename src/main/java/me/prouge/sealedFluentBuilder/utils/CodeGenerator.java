@@ -274,13 +274,11 @@ public class CodeGenerator {
    }
 
    public static String generateCode() {
-      StringBuilder code = new StringBuilder();
-      code.append(generatePublicBuilder());
-      code.append(requiredInterfaceBuilder());
-      code.append(optionalInterfaceBuilder());
-      code.append(builderClassBuilder());
-      code.append("\n}\n");
-      return code.toString();
+      return generatePublicBuilder() +
+              requiredInterfaceBuilder() +
+              optionalInterfaceBuilder() +
+              builderClassBuilder() +
+              "\n}\n";
    }
 
 }

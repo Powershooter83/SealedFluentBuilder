@@ -1,23 +1,7 @@
 package me.prouge.sealedFluentBuilder.panels;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.ListModel;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
-
-import org.jetbrains.annotations.NotNull;
-
-import com.intellij.icons.AllIcons;
 import com.intellij.ide.util.DefaultPsiElementCellRenderer;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
@@ -25,141 +9,134 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiField;
-import com.intellij.ui.AnActionButton;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBList;
-
 import me.prouge.sealedFluentBuilder.utils.CodeGenerator;
+import me.prouge.sealedFluentBuilder.utils.I18n;
+import me.prouge.sealedFluentBuilder.utils.Message;
+import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class FieldArrangementPanel extends DialogWrapper {
 
-   private final JList<PsiField> fieldList;
+    final Project project;
+    final Editor editor;
+    final PsiClass ownerClass;
+    private final JList<PsiField> fieldList;
+    private final JList<PsiField> optionalFieldList;
+    private final DefaultListModel<PsiField> fieldListModel;
+    private final DefaultListModel<PsiField> optionalFieldListModel;
 
-   private final JList<PsiField> optionalFieldList;
+    public FieldArrangementPanel(final Project project, final Editor editor,
+                                 final PsiClass ownerClass, DefaultListModel<PsiField> fields) {
+        super(ownerClass.getProject());
+        this.project = project;
+        this.editor = editor;
+        this.ownerClass = ownerClass;
 
-   private final DefaultListModel<PsiField> fieldListModel;
+        setSize(600, 800);
+        setTitle(I18n.getMessage(Message.ARRANGEMENT_TITLE));
 
-   private final DefaultListModel<PsiField> optionalFieldListModel;
+        fieldListModel = fields;
+        fieldList = new JBList<>(fieldListModel);
+        fieldList.setCellRenderer(new DefaultPsiElementCellRenderer());
+        fieldList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
-   final Project project;
+        optionalFieldListModel = new DefaultListModel<>();
+        optionalFieldList = new JBList<>(optionalFieldListModel);
+        optionalFieldList.setCellRenderer(new DefaultPsiElementCellRenderer());
+        optionalFieldList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
-   final Editor editor;
+        init();
+    }
 
-   final PsiClass ownerClass;
+    @Override
+    protected void init() {
+        super.init();
+    }
 
-   public FieldArrangementPanel(final Project project, final Editor editor,
-         final PsiClass ownerClass, DefaultListModel<PsiField> fields) {
-      super(ownerClass.getProject());
-      this.project = project;
-      this.editor = editor;
-      this.ownerClass = ownerClass;
+    private Box createLeftAlignedBoxWithText(String text) {
+        Box box = Box.createHorizontalBox();
+        box.add(new JLabel(text, SwingConstants.LEFT));
+        box.add(Box.createHorizontalGlue());
+        return box;
+    }
 
-      setSize(600, 800);
-      setTitle("Select optional fields (the order is respected by the builder)");
+    @Override
+    protected JComponent createCenterPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-      fieldListModel = fields;
-      fieldList = new JBList<>(fieldListModel);
-      fieldList.setCellRenderer(new DefaultPsiElementCellRenderer());
-      fieldList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        panel.add(createLeftAlignedBoxWithText(I18n.getMessage(Message.REQUIRED_FIELDS_LABEL)));
+        panel.add(Box.createVerticalStrut(10));
+        ToolbarDecorator decorator = ToolbarDecorator.createDecorator(fieldList);
+        decorator.disableRemoveAction();
+        decorator.addExtraAction(new AnAction("Move Down") {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e) {
+                moveFields(fieldList, fieldListModel, optionalFieldListModel);
+            }
+        });
 
-      optionalFieldListModel = new DefaultListModel<>();
-      optionalFieldList = new JBList<>(optionalFieldListModel);
-      optionalFieldList.setCellRenderer(new DefaultPsiElementCellRenderer());
-      optionalFieldList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        panel.add(decorator.createPanel());
+        panel.add(Box.createVerticalStrut(10));
 
-      init();
-   }
+        panel.add(createLeftAlignedBoxWithText(I18n.getMessage(Message.OPTIONAL_FIELDS_LABEL)));
+        panel.add(Box.createVerticalStrut(10));
 
-   @Override
-   protected void init() {
-      super.init();
-   }
+        ToolbarDecorator optionalDecorator = ToolbarDecorator.createDecorator(optionalFieldList);
+        optionalDecorator.disableRemoveAction();
+        optionalDecorator.addExtraAction(new AnAction("Move Up") {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e) {
+                moveFields(optionalFieldList, optionalFieldListModel, fieldListModel);
+            }
+        });
 
-   private Box createLeftAlignedBoxWithText(String text) {
-      Box box = Box.createHorizontalBox();
-      box.add(new JLabel(text, SwingConstants.LEFT));
-      box.add(Box.createHorizontalGlue());
-      return box;
-   }
+        panel.add(optionalDecorator.createPanel());
 
-   @Override
-   protected JComponent createCenterPanel() {
-      JPanel panel = new JPanel();
-      panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        return panel;
+    }
 
-      panel.add(createLeftAlignedBoxWithText("Required Fields:"));
-      panel.add(Box.createVerticalStrut(10));
-      ToolbarDecorator decorator = ToolbarDecorator.createDecorator(fieldList);
-      decorator.disableRemoveAction();
-      decorator.addExtraAction(new AnActionButton("Move Down", AllIcons.Actions.NextOccurence) {
+    @Override
+    protected void doOKAction() {
+        List<PsiField> selectedFields = getFields();
 
-         @Override
-         public void actionPerformed(@NotNull AnActionEvent e) {
-            moveFields(fieldList, fieldListModel, optionalFieldListModel);
-         }
-      });
+        if (selectedFields.size() < 2) {
+            Messages.showErrorDialog(I18n.getMessage(Message.REQUIRED_FIELDS_ERROR), "");
+            return;
+        }
 
-      panel.add(decorator.createPanel());
-      panel.add(Box.createVerticalStrut(10));
+        super.doOKAction();
+        CodeGenerator.generateBuilderCode(project, editor, ownerClass, selectedFields, getOptionalFields());
+    }
 
-      panel.add(createLeftAlignedBoxWithText("Optional Fields:"));
-      panel.add(Box.createVerticalStrut(10));
+    private void moveFields(JList<PsiField> sourceList, DefaultListModel<PsiField> sourceModel, DefaultListModel<PsiField> targetModel) {
+        List<PsiField> selectedFields = sourceList.getSelectedValuesList();
+        selectedFields.stream()
+                .filter(field -> !targetModel.contains(field))
+                .forEach(targetModel::addElement);
 
-      ToolbarDecorator optionalDecorator = ToolbarDecorator.createDecorator(optionalFieldList);
-      optionalDecorator.disableRemoveAction();
-      optionalDecorator.addExtraAction(new AnActionButton("Move Up", AllIcons.Actions.PreviousOccurence) {
+        selectedFields.forEach(sourceModel::removeElement);
+    }
 
-         @Override
-         public void actionPerformed(@NotNull AnActionEvent e) {
-            moveFields(optionalFieldList, optionalFieldListModel, fieldListModel);
-         }
-      });
+    private List<PsiField> getSelectedFieldsFromList(JList<PsiField> list) {
+        ListModel<PsiField> model = list.getModel();
+        return IntStream.range(0, model.getSize())
+                .mapToObj(model::getElementAt)
+                .collect(Collectors.toList());
+    }
 
-      panel.add(optionalDecorator.createPanel());
+    private List<PsiField> getFields() {
+        return getSelectedFieldsFromList(fieldList);
+    }
 
-      return panel;
-   }
-
-   @Override
-   protected void doOKAction() {
-      if(getFields().size() == 1) {
-         Messages.showErrorDialog("At least two fields must be selected as required!", "");
-      }else {
-         super.doOKAction();
-         CodeGenerator.generateBuilderCode(project,
-               editor,
-               ownerClass,
-               getFields(), getOptionalFields());
-      }
-
-   }
-
-   private void moveFields(JList<PsiField> sourceList, DefaultListModel<PsiField> sourceModel, DefaultListModel<PsiField> targetModel) {
-      List<PsiField> selectedFields = sourceList.getSelectedValuesList();
-      for (PsiField field : selectedFields) {
-         if (!targetModel.contains(field)) {
-            targetModel.addElement(field);
-         }
-         sourceModel.removeElement(field);
-      }
-   }
-
-   private List<PsiField> getSelectedFieldsFromList(JList<PsiField> list) {
-      List<PsiField> selectedFields = new ArrayList<>();
-      ListModel<PsiField> model = list.getModel();
-      for (int i = 0; i < model.getSize(); i++) {
-         PsiField field = model.getElementAt(i);
-         selectedFields.add(field);
-      }
-      return selectedFields;
-   }
-
-   public List<PsiField> getFields() {
-      return getSelectedFieldsFromList(fieldList);
-   }
-
-   public List<PsiField> getOptionalFields() {
-      return getSelectedFieldsFromList(optionalFieldList);
-   }
+    private List<PsiField> getOptionalFields() {
+        return getSelectedFieldsFromList(optionalFieldList);
+    }
 
 }

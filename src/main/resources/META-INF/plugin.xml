@@ -1,12 +1,12 @@
 <idea-plugin>
-   <id>me.prouge.FluentBuilder</id>
+   <id>me.prouge.sealedFluentBuilder</id>
    <depends>com.intellij.modules.java</depends>
    <depends>com.intellij.java</depends>
    <name>Sealed Fluent Builder</name>
 
    <version>0.2</version>
 
-   <idea-version since-build="1.0" until-build="500.*"/>
+   <idea-version since-build="223.7571.182"/>
 
    <vendor email="justcrout@gmail.com" url="https://github.com/Powershooter83">Powershooter83</vendor>
 
