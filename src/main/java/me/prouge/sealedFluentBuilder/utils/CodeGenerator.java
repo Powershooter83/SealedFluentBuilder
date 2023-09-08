@@ -7,10 +7,12 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiField;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class CodeGenerator {
 
-    public static final String BUILDER = "Builder";
     private final PluginContext context;
     private final List<PsiField> requiredFields;
     private final List<PsiField> optionalFields;
@@ -26,33 +28,32 @@ public class CodeGenerator {
     private void generateBuilderCode() {
         Caret primaryCaret = context.editor().getCaretModel().getPrimaryCaret();
 
-        Runnable formatCodeRunnable = () -> {
-            PsiDocumentManager documentManager = PsiDocumentManager.getInstance(context.project());
-            documentManager.doPostponedOperationsAndUnblockDocument(context.editor().getDocument());
-            new ReformatCodeProcessor(context.project(), context.ownerClass().getContainingFile(), null, false).run();
-        };
+        insertGeneratedCode(primaryCaret.getOffset(), generateCode());
+        formatInsertedCode();
+    }
 
+    private void insertGeneratedCode(int offset, String code) {
         WriteCommandAction.runWriteCommandAction(context.project(), () -> {
-
-            context.editor().getDocument().insertString(primaryCaret.getOffset(), generateCode());
-            formatCodeRunnable.run();
+            context.editor().getDocument().insertString(offset, code);
         });
+    }
 
+    private void formatInsertedCode() {
+        PsiDocumentManager documentManager = PsiDocumentManager.getInstance(context.project());
+        documentManager.doPostponedOperationsAndUnblockDocument(context.editor().getDocument());
+        new ReformatCodeProcessor(context.project(), context.ownerClass().getContainingFile(), null, false).run();
     }
 
     private String generatePublicBuilder() {
-        StringBuilder code = new StringBuilder();
         final String fieldName = requiredFields.get(0).getName();
-
-        code.append("public static ").append(toUppercase(requiredFields.get(1).getName())).append(BUILDER).append(" id(final ")
-                .append(requiredFields.get(0).getType().getPresentableText())
-                .append(" ")
-                .append(fieldName)
-                .append(") {\n")
-                .append("return new Builder().")
-                .append(fieldName).append("(")
-                .append(fieldName).append(");\n}\n");
-        return code.toString();
+        return "public static " + toUppercase(requiredFields.get(1).getName()) + "Builder" + " id(final " +
+                requiredFields.get(0).getType().getPresentableText() +
+                " " +
+                fieldName +
+                ") {\n" +
+                "return new Builder()." +
+                fieldName + "(" +
+                fieldName + ");\n}\n";
     }
 
     private String requiredInterfaceBuilder() {
@@ -94,29 +95,21 @@ public class CodeGenerator {
         return code.toString();
     }
 
+
     private String optionalInterfaceBuilder() {
-        StringBuilder code = new StringBuilder();
-
         final String creatorName = context.ownerClass().getName() + "Creator";
-
-        code.append("public sealed interface ")
-                .append(creatorName)
-                .append(" permits Builder {\n\n");
-
-        for (PsiField field : optionalFields) {
-            code.append(creatorName)
-                    .append(" ")
-                    .append(field.getName())
-                    .append("(final ")
-                    .append(field.getType().getPresentableText())
-                    .append(" ")
-                    .append(field.getName())
-                    .append("); \n\n");
-        }
-
-        code.append(context.ownerClass().getName())
-                .append(" build(); \n\n }");
-        return code.toString();
+        return Stream.concat(
+                        Stream.of("public sealed interface " + creatorName + " permits Builder {"),
+                        optionalFields.stream()
+                                .map(field -> String.format(
+                                        "%s %s(final %s %s);",
+                                        creatorName,
+                                        field.getName(),
+                                        field.getType().getPresentableText(),
+                                        field.getName()
+                                ))
+                )
+                .collect(Collectors.joining("\n\n", "", "\n\n" + context.ownerClass().getName() + " build();\n\n}\n"));
     }
 
     private String builderClassBuilder() {
@@ -126,6 +119,7 @@ public class CodeGenerator {
             code.append(toUppercase(requiredFields.get(i).getName()))
                     .append("Builder, ");
         }
+
         code.append(context.ownerClass().getName())
                 .append("Creator {\n\n");
 
@@ -145,119 +139,113 @@ public class CodeGenerator {
                     .append(";\n\n");
         }
 
-        code.append("private Builder() {\n}\n\n");
+        code.append("""
+                private Builder() {
+                }
 
-        code.append("private ")
-                .append(toUppercase(requiredFields.get(1).getName()))
-                .append("Builder")
-                .append(" ")
-                .append(requiredFields.get(0).getName())
-                .append("(final ")
-                .append(requiredFields.get(0).getType().getPresentableText())
-                .append(" ")
-                .append(requiredFields.get(0).getName())
-                .append(") {")
-                .append("this.")
-                .append(requiredFields.get(0).getName())
-                .append(" = ")
-                .append(requiredFields.get(0).getName())
-                .append(";\nreturn this;\n}\n");
+                private %sBuilder %s(final %s %s) {
+                    this.%s = %s;
+                    return this;
+                }
+                """.formatted(
+                toUppercase(requiredFields.get(1).getName()),
+                requiredFields.get(0).getName(),
+                requiredFields.get(0).getType().getPresentableText(),
+                requiredFields.get(0).getName(),
+                requiredFields.get(0).getName(),
+                requiredFields.get(0).getName()
+        ));
 
-        for (int i = 1; i < requiredFields.size() - 1; i++) {
-            final PsiField field = requiredFields.get(i);
-            final PsiField nextField = requiredFields.get(i + 1);
+        IntStream.range(1, requiredFields.size() - 1).forEach(i -> {
+            PsiField field = requiredFields.get(i);
+            PsiField nextField = requiredFields.get(i + 1);
 
-            code.append("@Override\n")
-                    .append("public ")
-                    .append(toUppercase(nextField.getName()))
-                    .append("Builder ")
-                    .append(field.getName())
-                    .append("(final ")
-                    .append(field.getType().getPresentableText())
-                    .append(" ")
-                    .append(field.getName())
-                    .append(") {\n")
-                    .append("this.")
-                    .append(field.getName())
-                    .append(" = ")
-                    .append(field.getName())
-                    .append(";\n")
-                    .append("return this;")
-                    .append("\n}\n");
-        }
+            code.append("""
+                    @Override
+                    public %sBuilder %s(final %s %s) {
+                        this.%s = %s;
+                        return this;
+                    }
+                    """.formatted(
+                    toUppercase(nextField.getName()),
+                    field.getName(),
+                    field.getType().getPresentableText(),
+                    field.getName(),
+                    field.getName(),
+                    field.getName()
+            ));
+        });
 
         final String creatorName = context.ownerClass().getName() + "Creator";
         final PsiField lastField = requiredFields.get(requiredFields.size() - 1);
 
-        code.append("@Override\n")
-                .append("public ")
-                .append(creatorName)
-                .append(" ")
-                .append(lastField.getName())
-                .append("(final ")
-                .append(lastField.getType().getPresentableText())
-                .append(" ")
-                .append(lastField.getName())
-                .append(") {\n")
-                .append("this.")
-                .append(lastField.getName())
-                .append(" = ")
-                .append(lastField.getName())
-                .append(";\n")
-                .append("return this;")
-                .append("\n}\n");
+        code.append("""
+                @Override
+                public %s %s(final %s %s) {
+                    this.%s = %s;
+                    return this;
+                }
+                """.formatted(
+                creatorName,
+                lastField.getName(),
+                lastField.getType().getPresentableText(),
+                lastField.getName(),
+                lastField.getName(),
+                lastField.getName()
+        ));
 
         for (final PsiField field : optionalFields) {
-            code.append("@Override\n")
-                    .append("public ")
-                    .append(creatorName)
-                    .append(" ")
-                    .append(field.getName())
-                    .append("(final ")
-                    .append(field.getType().getPresentableText())
-                    .append(" ")
-                    .append(field.getName())
-                    .append(") {\n")
-                    .append("this.")
-                    .append(field.getName())
-                    .append(" = ")
-                    .append(field.getName())
-                    .append(";\n")
-                    .append("return this;")
-                    .append("\n}\n");
+            code.append("""
+                    @Override
+                    public %s %s(final %s %s) {
+                        this.%s = %s;
+                        return this;
+                    }
+                    """.formatted(
+                    creatorName,
+                    field.getName(),
+                    field.getType().getPresentableText(),
+                    field.getName(),
+                    field.getName(),
+                    field.getName()
+            ));
         }
+
 
         final String className = toLowercase(context.ownerClass().getName());
 
-        code.append("@Override")
-                .append("\npublic ")
-                .append(context.ownerClass().getName())
-                .append(" build() {\n")
-                .append("final ")
-                .append(context.ownerClass().getName())
-                .append(" ")
-                .append(className)
-                .append(" = new ")
-                .append(context.ownerClass().getName())
-                .append("();\n");
+        code.append("""
+                @Override
+                public %s build() {
+                    final %s %s = new %s();
+                    """.formatted(
+                context.ownerClass().getName(),
+                context.ownerClass().getName(),
+                className,
+                context.ownerClass().getName()
+        ));
 
-        for (PsiField field : requiredFields) {
-            code.append(className).append(".set")
-                    .append(toUppercase(field.getName()))
-                    .append("(")
-                    .append(field.getName())
-                    .append(");\n");
-        }
-        for (PsiField field : optionalFields) {
-            code.append(className).append(".set")
-                    .append(toUppercase(field.getName()))
-                    .append("(")
-                    .append(field.getName())
-                    .append(");\n");
-        }
-        code.append("return ").append(className).append(";");
 
-        code.append("\n}\n");
+        requiredFields.forEach(field -> code.append("""
+                %s.set%s(%s);
+                """.formatted(
+                className,
+                toUppercase(field.getName()),
+                field.getName()
+        )));
+
+        optionalFields.forEach(field -> code.append("""
+                %s.set%s(%s);
+                """.formatted(
+                className,
+                toUppercase(field.getName()),
+                field.getName()
+        )));
+
+        code.append("""
+                return %s;
+                }
+                """.formatted(className));
 
         return code.toString();
     }
