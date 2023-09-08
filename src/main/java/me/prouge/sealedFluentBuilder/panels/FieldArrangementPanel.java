@@ -3,17 +3,15 @@ package me.prouge.sealedFluentBuilder.panels;
 import com.intellij.ide.util.DefaultPsiElementCellRenderer;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiField;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBList;
 import me.prouge.sealedFluentBuilder.utils.CodeGenerator;
 import me.prouge.sealedFluentBuilder.utils.I18n;
 import me.prouge.sealedFluentBuilder.utils.Message;
+import me.prouge.sealedFluentBuilder.utils.PluginContext;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -21,37 +19,35 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.intellij.ui.ToolbarDecorator.createDecorator;
+
 public class FieldArrangementPanel extends DialogWrapper {
 
-    final Project project;
-    final Editor editor;
-    final PsiClass ownerClass;
-    private final JList<PsiField> fieldList;
-    private final JList<PsiField> optionalFieldList;
+    final PluginContext context;
+    private final JBList<PsiField> fieldList;
+    private final JBList<PsiField> optionalFieldList;
     private final DefaultListModel<PsiField> fieldListModel;
     private final DefaultListModel<PsiField> optionalFieldListModel;
 
-    public FieldArrangementPanel(final Project project, final Editor editor,
-                                 final PsiClass ownerClass, DefaultListModel<PsiField> fields) {
-        super(ownerClass.getProject());
-        this.project = project;
-        this.editor = editor;
-        this.ownerClass = ownerClass;
+    public FieldArrangementPanel(final PluginContext context, DefaultListModel<PsiField> fields) {
+        super(context.ownerClass().getProject());
+        this.context = context;
 
         setSize(600, 800);
         setTitle(I18n.getMessage(Message.ARRANGEMENT_TITLE));
 
         fieldListModel = fields;
-        fieldList = new JBList<>(fieldListModel);
+        optionalFieldListModel = new DefaultListModel<>();
+        fieldList = createPsiFieldList(fieldListModel);
+        optionalFieldList = createPsiFieldList(optionalFieldListModel);
+        init();
+    }
+
+    private JBList<PsiField> createPsiFieldList(final DefaultListModel<PsiField> fieldListModel) {
+        final JBList<PsiField> fieldList = new JBList<>(fieldListModel);
         fieldList.setCellRenderer(new DefaultPsiElementCellRenderer());
         fieldList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-
-        optionalFieldListModel = new DefaultListModel<>();
-        optionalFieldList = new JBList<>(optionalFieldListModel);
-        optionalFieldList.setCellRenderer(new DefaultPsiElementCellRenderer());
-        optionalFieldList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-
-        init();
+        return fieldList;
     }
 
     @Override
@@ -73,33 +69,33 @@ public class FieldArrangementPanel extends DialogWrapper {
 
         panel.add(createLeftAlignedBoxWithText(I18n.getMessage(Message.REQUIRED_FIELDS_LABEL)));
         panel.add(Box.createVerticalStrut(10));
-        ToolbarDecorator decorator = ToolbarDecorator.createDecorator(fieldList);
-        decorator.disableRemoveAction();
-        decorator.addExtraAction(new AnAction("Move Down") {
-            @Override
-            public void actionPerformed(@NotNull AnActionEvent e) {
-                moveFields(fieldList, fieldListModel, optionalFieldListModel);
-            }
-        });
 
-        panel.add(decorator.createPanel());
+        panel.add(createToolbar(fieldList)
+                .addExtraAction(new AnAction("Move Down") {
+                    @Override
+                    public void actionPerformed(@NotNull AnActionEvent e) {
+                        moveFields(fieldList, fieldListModel, optionalFieldListModel);
+                    }
+                }).createPanel());
+
         panel.add(Box.createVerticalStrut(10));
-
         panel.add(createLeftAlignedBoxWithText(I18n.getMessage(Message.OPTIONAL_FIELDS_LABEL)));
         panel.add(Box.createVerticalStrut(10));
 
-        ToolbarDecorator optionalDecorator = ToolbarDecorator.createDecorator(optionalFieldList);
-        optionalDecorator.disableRemoveAction();
-        optionalDecorator.addExtraAction(new AnAction("Move Up") {
-            @Override
-            public void actionPerformed(@NotNull AnActionEvent e) {
-                moveFields(optionalFieldList, optionalFieldListModel, fieldListModel);
-            }
-        });
-
-        panel.add(optionalDecorator.createPanel());
-
+        panel.add(createToolbar(optionalFieldList)
+                .addExtraAction(new AnAction("Move Up") {
+                    @Override
+                    public void actionPerformed(@NotNull AnActionEvent e) {
+                        moveFields(optionalFieldList, optionalFieldListModel, fieldListModel);
+                    }
+                }).createPanel());
         return panel;
+    }
+
+    private ToolbarDecorator createToolbar(JList<PsiField> fieldList) {
+        return createDecorator(fieldList)
+                .disableAddAction()
+                .disableRemoveAction();
     }
 
     @Override
@@ -112,7 +108,7 @@ public class FieldArrangementPanel extends DialogWrapper {
         }
 
         super.doOKAction();
-        CodeGenerator.generateBuilderCode(project, editor, ownerClass, selectedFields, getOptionalFields());
+        new CodeGenerator(context, selectedFields, getOptionalFields());
     }
 
     private void moveFields(JList<PsiField> sourceList, DefaultListModel<PsiField> sourceModel, DefaultListModel<PsiField> targetModel) {

@@ -10,6 +10,7 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import me.prouge.sealedFluentBuilder.panels.FieldSelectionPanel;
+import me.prouge.sealedFluentBuilder.utils.PluginContext;
 import org.jetbrains.annotations.NotNull;
 
 public class CreateBuilderAction extends AnAction {
@@ -30,8 +31,7 @@ public class CreateBuilderAction extends AnAction {
             return;
         }
 
-        FieldSelectionPanel panel = new FieldSelectionPanel(project, editor, psiClass);
-        panel.show();
+        new FieldSelectionPanel(new PluginContext(project, editor, psiClass)).show();
     }
 
 }

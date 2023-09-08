@@ -1,8 +1,6 @@
 package me.prouge.sealedFluentBuilder.panels;
 
 import com.intellij.ide.util.DefaultPsiElementCellRenderer;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiClass;
@@ -12,6 +10,7 @@ import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBList;
 import me.prouge.sealedFluentBuilder.utils.I18n;
 import me.prouge.sealedFluentBuilder.utils.Message;
+import me.prouge.sealedFluentBuilder.utils.PluginContext;
 
 import javax.swing.*;
 
@@ -20,17 +19,14 @@ import static com.intellij.ui.ToolbarDecorator.createDecorator;
 
 public class FieldSelectionPanel extends DialogWrapper {
 
-    final PsiClass ownerClass;
-    final Project project;
-    final Editor editor;
+    final PluginContext context;
     private final JBList<PsiField> fieldList;
 
-    public FieldSelectionPanel(final Project project, final Editor editor, final PsiClass ownerClass) {
-        super(ownerClass.getProject());
-        this.project = project;
-        this.editor = editor;
-        this.ownerClass = ownerClass;
-        fieldList = loadClassFields(ownerClass);
+    public FieldSelectionPanel(final PluginContext context) {
+        super(context.ownerClass().getProject());
+
+        this.context = context;
+        fieldList = loadClassFields(context.ownerClass());
         setSize(600, 400);
         setTitle(I18n.getMessage(Message.SELECTION_TITLE));
         init();
@@ -49,21 +45,23 @@ public class FieldSelectionPanel extends DialogWrapper {
     }
 
     private ToolbarDecorator createToolbar() {
-        ToolbarDecorator decorator = createDecorator(fieldList);
-        decorator.disableAddAction();
-        decorator.disableRemoveAction();
-        decorator.disableUpDownActions();
-        return decorator;
+        return createDecorator(fieldList)
+                .disableAddAction()
+                .disableRemoveAction()
+                .disableUpDownActions();
     }
 
     @Override
     protected void doOKAction() {
-        if (getFields().size() < 2) {
+        DefaultListModel<PsiField> selectedFields = getFields();
+
+        if (selectedFields.size() < 2) {
             Messages.showErrorDialog(I18n.getMessage(Message.SELECTED_FIELDS_ERROR), "");
-        } else {
-            super.doOKAction();
-            new FieldArrangementPanel(project, editor, ownerClass, getFields()).show();
+            return;
         }
+
+        super.doOKAction();
+        new FieldArrangementPanel(context, selectedFields).show();
     }
 
     @Override
@@ -73,9 +71,7 @@ public class FieldSelectionPanel extends DialogWrapper {
 
     public DefaultListModel<PsiField> getFields() {
         DefaultListModel<PsiField> model = new DefaultListModel<>();
-        for (PsiField field : fieldList.getSelectedValuesList()) {
-            model.addElement(field);
-        }
+        fieldList.getSelectedValuesList().forEach(model::addElement);
         return model;
     }
 
