@@ -1,4 +1,4 @@
-package me.prouge.fluentbuilder.panels;
+package me.prouge.sealedFluentBuilder.panels;
 
 import static com.intellij.openapi.ui.LabeledComponent.create;
 import static com.intellij.ui.ToolbarDecorator.createDecorator;

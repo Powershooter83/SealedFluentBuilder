@@ -1,4 +1,4 @@
-package me.prouge.fluentbuilder.actions;
+package me.prouge.sealedFluentBuilder.actions;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +12,7 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 
-import me.prouge.fluentbuilder.panels.FieldSelectionPanel;
+import me.prouge.sealedFluentBuilder.panels.FieldSelectionPanel;
 
 public class CreateBuilderAction extends AnAction {
 

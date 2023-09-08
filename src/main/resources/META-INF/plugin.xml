@@ -40,7 +40,7 @@
    </extensions>
 
    <actions>
-      <action id="fluentbuilder.action.createBuilderAction" class="me.prouge.fluentbuilder.actions.CreateBuilderAction" text="Sealed Fluent Builder" description="Navigate Action">
+      <action id="sealedFluentBuilder.action.createBuilderAction" class="me.prouge.sealedFluentBuilder.actions.CreateBuilderAction" text="Sealed Fluent Builder" description="Navigate Action">
          <add-to-group group-id="GenerateGroup" anchor="first"/>
       </action>
    </actions>

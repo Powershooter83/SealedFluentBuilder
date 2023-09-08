@@ -1,4 +1,4 @@
-package me.prouge.fluentbuilder.panels;
+package me.prouge.sealedFluentBuilder.panels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ import com.intellij.ui.AnActionButton;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBList;
 
-import me.prouge.fluentbuilder.utils.CodeGenerator;
+import me.prouge.sealedFluentBuilder.utils.CodeGenerator;
 
 public class FieldArrangementPanel extends DialogWrapper {
 

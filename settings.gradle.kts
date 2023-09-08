@@ -1,1 +1,1 @@
-rootProject.name = "FluentBuilder"
+rootProject.name = "SealedFluentBuilder"

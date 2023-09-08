@@ -1,4 +1,4 @@
-package me.prouge.fluentbuilder.utils;
+package me.prouge.sealedFluentBuilder.utils;
 
 import java.util.List;
 
