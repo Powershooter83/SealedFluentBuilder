@@ -1,4 +1,4 @@
-package me.prouge.sealedFluentBuilder.actions;
+package me.prouge.sealedfluentbuilder.actions;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -9,8 +9,8 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
-import me.prouge.sealedFluentBuilder.panels.FieldSelectionPanel;
-import me.prouge.sealedFluentBuilder.utils.PluginContext;
+import me.prouge.sealedfluentbuilder.panels.FieldSelectionPanel;
+import me.prouge.sealedfluentbuilder.utils.PluginContext;
 import org.jetbrains.annotations.NotNull;
 
 public class CreateBuilderAction extends AnAction {

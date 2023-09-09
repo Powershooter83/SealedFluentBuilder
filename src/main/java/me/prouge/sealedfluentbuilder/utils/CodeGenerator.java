@@ -1,4 +1,4 @@
-package me.prouge.sealedFluentBuilder.utils;
+package me.prouge.sealedfluentbuilder.utils;
 
 import com.intellij.codeInsight.actions.ReformatCodeProcessor;
 import com.intellij.openapi.command.WriteCommandAction;

@@ -1,4 +1,4 @@
-package me.prouge.sealedFluentBuilder.utils;
+package me.prouge.sealedfluentbuilder.utils;
 
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;

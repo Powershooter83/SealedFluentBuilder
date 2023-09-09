@@ -1,5 +1,5 @@
 <idea-plugin>
-   <id>me.prouge.sealedFluentBuilder</id>
+   <id>me.prouge.sealedfluentbuilder</id>
    <depends>com.intellij.modules.java</depends>
    <depends>com.intellij.java</depends>
    <name>Sealed Fluent Builder</name>
@@ -40,8 +40,8 @@
    </extensions>
 
    <actions>
-      <action id="sealedFluentBuilder.action.createBuilderAction" class="me.prouge.sealedFluentBuilder.actions.CreateBuilderAction" text="Sealed Fluent Builder" description="Generate a Sealed Fluent Builder pattern!"
-      icon="/icons/icon.svg">
+      <action id="sealedfluentbuilder.action.createBuilderAction" class="me.prouge.sealedfluentbuilder.actions.CreateBuilderAction" text="Sealed Fluent Builder" description="Generate a Sealed Fluent Builder pattern!"
+              icon="/icons/icon.svg">
          <add-to-group group-id="GenerateGroup" anchor="first"/>
       </action>
    </actions>

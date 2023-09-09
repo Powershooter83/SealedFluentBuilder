@@ -1,4 +1,4 @@
-package me.prouge.sealedFluentBuilder.panels;
+package me.prouge.sealedfluentbuilder.panels;
 
 import com.intellij.ide.util.DefaultPsiElementCellRenderer;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -8,9 +8,9 @@ import com.intellij.psi.PsiField;
 import com.intellij.ui.CollectionListModel;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBList;
-import me.prouge.sealedFluentBuilder.utils.I18n;
-import me.prouge.sealedFluentBuilder.utils.Message;
-import me.prouge.sealedFluentBuilder.utils.PluginContext;
+import me.prouge.sealedfluentbuilder.utils.I18n;
+import me.prouge.sealedfluentbuilder.utils.Message;
+import me.prouge.sealedfluentbuilder.utils.PluginContext;
 
 import javax.swing.*;
 
