@@ -71,7 +71,7 @@ public class FieldArrangementPanel extends DialogWrapper {
         panel.add(Box.createVerticalStrut(10));
 
         panel.add(createToolbar(fieldList)
-                .addExtraAction(new AnAction("Move Down") {
+                .addExtraAction(new AnAction(I18n.getMessage(Message.BUTTON_DOWN_LABEL)) {
                     @Override
                     public void actionPerformed(@NotNull AnActionEvent e) {
                         moveFields(fieldList, fieldListModel, optionalFieldListModel);
@@ -83,7 +83,7 @@ public class FieldArrangementPanel extends DialogWrapper {
         panel.add(Box.createVerticalStrut(10));
 
         panel.add(createToolbar(optionalFieldList)
-                .addExtraAction(new AnAction("Move Up") {
+                .addExtraAction(new AnAction(I18n.getMessage(Message.BUTTON_UP_LABEL)) {
                     @Override
                     public void actionPerformed(@NotNull AnActionEvent e) {
                         moveFields(optionalFieldList, optionalFieldListModel, fieldListModel);
