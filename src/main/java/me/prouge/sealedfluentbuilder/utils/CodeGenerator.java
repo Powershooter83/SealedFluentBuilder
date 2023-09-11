@@ -3,10 +3,11 @@ package me.prouge.sealedfluentbuilder.utils;
 import com.intellij.codeInsight.actions.ReformatCodeProcessor;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Caret;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiField;
+import com.intellij.psi.*;
+import com.intellij.psi.util.PsiTreeUtil;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -27,9 +28,22 @@ public class CodeGenerator {
 
     private void generateBuilderCode() {
         Caret primaryCaret = context.editor().getCaretModel().getPrimaryCaret();
-
-        insertGeneratedCode(primaryCaret.getOffset(), generateCode());
+        if (!isCursorInsideClass(primaryCaret.getOffset())) {
+            insertGeneratedCode(context.ownerClass().getLastChild().getTextOffset(), generateCode());
+        } else {
+            insertGeneratedCode(primaryCaret.getOffset(), generateCode());
+        }
         formatInsertedCode();
+    }
+
+    private boolean isCursorInsideClass(int offset) {
+        PsiFile psiFile = PsiDocumentManager.getInstance(context.project()).getPsiFile(context.editor().getDocument());
+        PsiElement element = Objects.requireNonNull(psiFile).findElementAt(offset);
+        if (element != null) {
+            PsiClass psiClass = PsiTreeUtil.getParentOfType(element, PsiClass.class, false);
+            return psiClass != null;
+        }
+        return false;
     }
 
     private void insertGeneratedCode(int offset, String code) {
