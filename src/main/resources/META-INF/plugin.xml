@@ -4,7 +4,7 @@
    <depends>com.intellij.java</depends>
    <name>Sealed Fluent Builder</name>
 
-   <version>0.4</version>
+   <version>0.5</version>
 
    <idea-version since-build="223.7571.182"/>
 
