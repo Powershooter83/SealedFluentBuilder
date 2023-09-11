@@ -46,7 +46,10 @@ public class CodeGenerator {
 
     private String generatePublicBuilder() {
         final String fieldName = requiredFields.get(0).getName();
-        return "public static " + toUppercase(requiredFields.get(1).getName()) + "Builder" + " id(final " +
+        return "public static " + toUppercase(requiredFields.get(1).getName()) + "Builder"
+                + " "
+                + fieldName
+                + "(final " +
                 requiredFields.get(0).getType().getPresentableText() +
                 " " +
                 fieldName +
@@ -251,7 +254,7 @@ public class CodeGenerator {
     }
 
     private String toUppercase(final String value) {
-        return value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
+        return value.substring(0, 1).toUpperCase() + value.substring(1);
     }
 
     private String toLowercase(final String value) {

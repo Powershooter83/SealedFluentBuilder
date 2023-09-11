@@ -27,6 +27,7 @@ public class FieldSelectionPanel extends DialogWrapper {
 
         this.context = context;
         fieldList = loadClassFields(context.ownerClass());
+        selectAllFields();
         setSize(600, 400);
         setTitle(I18n.getMessage(Message.SELECTION_TITLE));
         init();
@@ -35,6 +36,14 @@ public class FieldSelectionPanel extends DialogWrapper {
     @Override
     protected void init() {
         super.init();
+    }
+
+    private void selectAllFields() {
+        int[] indices = new int[fieldList.getModel().getSize()];
+        for (int i = 0; i < indices.length; i++) {
+            indices[i] = i;
+        }
+        fieldList.setSelectedIndices(indices);
     }
 
     private JBList<PsiField> loadClassFields(final PsiClass ownerClass) {
