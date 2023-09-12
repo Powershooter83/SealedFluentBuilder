@@ -3,10 +3,12 @@ package me.prouge.sealedfluentbuilder.utils;
 import com.intellij.codeInsight.actions.ReformatCodeProcessor;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Caret;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiField;
+import com.intellij.psi.*;
+import com.intellij.psi.util.PsiTreeUtil;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -17,19 +19,35 @@ public class CodeGenerator {
     private final List<PsiField> requiredFields;
     private final List<PsiField> optionalFields;
 
-    public CodeGenerator(final PluginContext context, final List<PsiField> requiredFields, final List<PsiField> optionalFields) {
+    private final GenerationType generationType;
+
+    public CodeGenerator(final PluginContext context, final List<PsiField> requiredFields, final List<PsiField> optionalFields, final GenerationType generationType) {
         this.context = context;
         this.requiredFields = requiredFields;
         this.optionalFields = optionalFields;
+        this.generationType = generationType;
 
         generateBuilderCode();
     }
 
     private void generateBuilderCode() {
         Caret primaryCaret = context.editor().getCaretModel().getPrimaryCaret();
-
-        insertGeneratedCode(primaryCaret.getOffset(), generateCode());
+        if (!isCursorInsideClass(primaryCaret.getOffset())) {
+            insertGeneratedCode(context.ownerClass().getLastChild().getTextOffset(), generateCode());
+        } else {
+            insertGeneratedCode(primaryCaret.getOffset(), generateCode());
+        }
         formatInsertedCode();
+    }
+
+    private boolean isCursorInsideClass(int offset) {
+        PsiFile psiFile = PsiDocumentManager.getInstance(context.project()).getPsiFile(context.editor().getDocument());
+        PsiElement element = Objects.requireNonNull(psiFile).findElementAt(offset);
+        if (element != null) {
+            PsiClass psiClass = PsiTreeUtil.getParentOfType(element, PsiClass.class, false);
+            return psiClass != null;
+        }
+        return false;
     }
 
     private void insertGeneratedCode(int offset, String code) {
@@ -217,6 +235,82 @@ public class CodeGenerator {
 
         final String className = toLowercase(context.ownerClass().getName());
 
+        switch (generationType) {
+            case SETTER -> code.append(generateWithSetter(className));
+            case CONSTRUCTOR -> code.append(generateWithConstructor());
+            case CONSTRUCTOR_WITH_BUILDER -> code.append(generateWithConstructorBuilder());
+        }
+        return code.toString();
+    }
+
+    private String generateSetter() {
+        StringBuilder code = new StringBuilder();
+        getAllFields().forEach(field -> {
+            final String fieldName = field.getName();
+            final String fieldType = field.getType().getPresentableText();
+            final String setterName = "set" + toUppercase(fieldName);
+
+            code.append(String.format("public void %s(final %s %s) {\n", setterName, fieldType, fieldName));
+            code.append(String.format("    this.%s = %s;\n", fieldName, fieldName));
+            code.append("}\n");
+        });
+
+        return code.toString();
+    }
+
+    private String generateConstructor() {
+        List<PsiField> allFields = getAllFields();
+        StringBuilder code = new StringBuilder();
+        code.append(String.format("public %s(", context.ownerClass().getName()));
+        for (int i = 0; i < allFields.size() - 1; i++) {
+            code.append(String.format("final %s %s, ", allFields.get(i).getType().getPresentableText(), allFields.get(i).getName()));
+        }
+        code.append(String.format("final %s %s", allFields.get(allFields.size() - 1).getType().getPresentableText(), allFields.get(allFields.size() - 1).getName()));
+        code.append(") {\n");
+        for (PsiField field : allFields) {
+            code.append(String.format("    this.%s = %s;\n", field.getName(), field.getName()));
+        }
+        code.append("}\n");
+        return code.toString();
+    }
+
+    private String generateConstructorBuilder() {
+        StringBuilder code = new StringBuilder();
+        List<PsiField> allFields = getAllFields();
+        code.append(String.format("public %s(final Builder builder) {\n", context.ownerClass().getName()));
+        allFields.forEach(field -> code.append(String.format("this.%s = builder.%s;\n", field.getName(), field.getName())));
+        code.append("}\n");
+        return code.toString();
+    }
+
+    private String generateWithConstructor() {
+        StringBuilder code = new StringBuilder();
+        List<PsiField> allFields = getAllFields();
+        code.append("""
+                @Override
+                public %s build() {
+                    return new %s(""".formatted(
+                context.ownerClass().getName(), context.ownerClass().getName()));
+
+        for (int i = 0; i < allFields.size() - 1; i++) {
+            code.append("%s, ".formatted(allFields.get(i).getName()));
+        }
+        code.append("%s);\n}\n".formatted(allFields.get(allFields.size() - 1).getName()));
+        return code.toString();
+    }
+
+    private String generateWithConstructorBuilder() {
+        return """
+                @Override
+                public %s build() {
+                    return new %s(this);
+                }
+                """.formatted(
+                context.ownerClass().getName(), context.ownerClass().getName());
+    }
+
+    private String generateWithSetter(final String className) {
+        StringBuilder code = new StringBuilder();
         code.append("""
                 @Override
                 public %s build() {
@@ -261,13 +355,28 @@ public class CodeGenerator {
         return value.substring(0, 1).toLowerCase() + value.substring(1);
     }
 
-    private String generateCode() {
-        return generatePublicBuilder() +
-                requiredInterfaceBuilder() +
-                optionalInterfaceBuilder() +
-                builderClassBuilder() +
-                "\n}\n";
+    private List<PsiField> getAllFields() {
+        List<PsiField> allFields = new ArrayList<>(requiredFields);
+        allFields.addAll(optionalFields);
+        return allFields;
     }
+
+
+    private String generateCode() {
+        StringBuilder code = new StringBuilder();
+
+        switch (generationType) {
+            case SETTER -> code.append(generateSetter());
+            case CONSTRUCTOR -> code.append(generateConstructor());
+            case CONSTRUCTOR_WITH_BUILDER -> code.append(generateConstructorBuilder());
+        }
+        return code.append(generatePublicBuilder())
+                .append(requiredInterfaceBuilder())
+                .append(optionalInterfaceBuilder())
+                .append(builderClassBuilder())
+                .append("\n}\n").toString();
+    }
+
 
 }
 

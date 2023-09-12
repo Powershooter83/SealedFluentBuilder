@@ -8,13 +8,13 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiField;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBList;
-import me.prouge.sealedfluentbuilder.utils.CodeGenerator;
-import me.prouge.sealedfluentbuilder.utils.I18n;
-import me.prouge.sealedfluentbuilder.utils.Message;
-import me.prouge.sealedfluentbuilder.utils.PluginContext;
+import com.intellij.ui.components.JBRadioButton;
+import me.prouge.sealedfluentbuilder.utils.*;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -28,10 +28,15 @@ public class FieldArrangementPanel extends DialogWrapper {
     private final JBList<PsiField> optionalFieldList;
     private final DefaultListModel<PsiField> fieldListModel;
     private final DefaultListModel<PsiField> optionalFieldListModel;
+    private final List<JBRadioButton> radioButtons = new ArrayList<>();
 
     public FieldArrangementPanel(final PluginContext context, DefaultListModel<PsiField> fields) {
         super(context.ownerClass().getProject());
         this.context = context;
+        radioButtons.add(new JBRadioButton(I18n.getMessage(Message.ARRANGEMENT_RADIO_BUTTON_CONSTRUCTOR)));
+        radioButtons.add(new JBRadioButton(I18n.getMessage(Message.ARRANGEMENT_RADIO_BUTTON_CONSTRUCTOR_WITH_BUILDER)));
+        radioButtons.add(new JBRadioButton(I18n.getMessage(Message.ARRANGEMENT_RADIO_BUTTON_CONSTRUCTOR_WITH_SETTER)));
+        radioButtons.get(0).setSelected(true);
 
         setSize(600, 800);
         setTitle(I18n.getMessage(Message.ARRANGEMENT_TITLE));
@@ -89,6 +94,18 @@ public class FieldArrangementPanel extends DialogWrapper {
                         moveFields(optionalFieldList, optionalFieldListModel, fieldListModel);
                     }
                 }).createPanel());
+
+        JPanel radioButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        radioButtons.forEach(radioButton -> {
+            radioButtonPanel.add(radioButton);
+            radioButton.addActionListener(e -> radioButtons.forEach(rb -> {
+                if (rb != radioButton) {
+                    rb.setSelected(false);
+                }
+            }));
+        });
+
+        panel.add(radioButtonPanel);
         return panel;
     }
 
@@ -108,7 +125,17 @@ public class FieldArrangementPanel extends DialogWrapper {
         }
 
         super.doOKAction();
-        new CodeGenerator(context, selectedFields, getOptionalFields());
+        new CodeGenerator(context, selectedFields, getOptionalFields(), getGenerationType());
+    }
+
+    private GenerationType getGenerationType() {
+        if (radioButtons.get(0).isSelected()) {
+            return GenerationType.CONSTRUCTOR;
+        }
+        if (radioButtons.get(1).isSelected()) {
+            return GenerationType.CONSTRUCTOR_WITH_BUILDER;
+        }
+        return GenerationType.SETTER;
     }
 
     private void moveFields(JList<PsiField> sourceList, DefaultListModel<PsiField> sourceModel, DefaultListModel<PsiField> targetModel) {

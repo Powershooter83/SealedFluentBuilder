@@ -4,11 +4,31 @@
    <depends>com.intellij.java</depends>
    <name>Sealed Fluent Builder</name>
 
-   <version>0.4</version>
+   <version>0.5</version>
 
    <idea-version since-build="223.7571.182"/>
 
    <vendor email="justcrout@gmail.com" url="https://github.com/Powershooter83">Powershooter83</vendor>
+
+   <change-notes><![CDATA[
+    <h1>Version 0.5 Change Notes</h1>
+
+    <h2>Features Added:</h2>
+    <ul>
+        <li>You can now choose how the class is populated with fields when generating:</li>
+        <ul>
+            <li>Through the constructor</li>
+            <li>Through the constructor with a builder</li>
+            <li>Using setters</li>
+        </ul>
+    </ul>
+
+    <h2>Bug Fixes:</h2>
+    <ul>
+        <li>Fixed an issue where generating code outside of the class would still generate it outside of the class.</li>
+    </ul>
+    ]]>
+   </change-notes>
 
    <description><![CDATA[
 <body>
@@ -36,7 +56,6 @@
    <depends>com.intellij.modules.platform</depends>
 
    <extensions defaultExtensionNs="com.intellij">
-
    </extensions>
 
    <actions>
