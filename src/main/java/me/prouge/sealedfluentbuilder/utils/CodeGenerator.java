@@ -261,7 +261,7 @@ public class CodeGenerator {
     private String generateConstructor() {
         List<PsiField> allFields = getAllFields();
         StringBuilder code = new StringBuilder();
-        code.append(String.format("public %s(", context.ownerClass().getName()));
+        code.append(String.format("private %s(", context.ownerClass().getName()));
         for (int i = 0; i < allFields.size() - 1; i++) {
             code.append(String.format("final %s %s, ", allFields.get(i).getType().getPresentableText(), allFields.get(i).getName()));
         }
