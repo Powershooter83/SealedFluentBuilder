@@ -4,17 +4,17 @@
     <depends>com.intellij.java</depends>
     <name>Sealed Fluent Builder</name>
 
-    <version>0.6</version>
+    <version>0.7</version>
 
     <idea-version since-build="223.7571.182"/>
 
     <vendor email="justcrout@gmail.com" url="https://github.com/Powershooter83">Powershooter83</vendor>
 
     <change-notes><![CDATA[
-    <h1>Version 0.6 Change Notes</h1>
+    <h1>Version 0.7 Change Notes</h1>
 
     <ul>
-        <li>Constructors are now private</li>
+        <li>Added configuration page</li>
     </ul>
     ]]>
     </change-notes>
