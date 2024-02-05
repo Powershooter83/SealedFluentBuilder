@@ -9,6 +9,7 @@ import com.intellij.psi.PsiField;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBRadioButton;
+import me.prouge.sealedfluentbuilder.ui.AppSettingsState;
 import me.prouge.sealedfluentbuilder.utils.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,10 +34,11 @@ public class FieldArrangementPanel extends DialogWrapper {
     public FieldArrangementPanel(final PluginContext context, DefaultListModel<PsiField> fields) {
         super(context.ownerClass().getProject());
         this.context = context;
+
         radioButtons.add(new JBRadioButton(I18n.getMessage(Message.ARRANGEMENT_RADIO_BUTTON_CONSTRUCTOR)));
         radioButtons.add(new JBRadioButton(I18n.getMessage(Message.ARRANGEMENT_RADIO_BUTTON_CONSTRUCTOR_WITH_BUILDER)));
         radioButtons.add(new JBRadioButton(I18n.getMessage(Message.ARRANGEMENT_RADIO_BUTTON_CONSTRUCTOR_WITH_SETTER)));
-        radioButtons.get(0).setSelected(true);
+        radioButtons.get(AppSettingsState.getInstance().selectedDropdownIndex).setSelected(true);
 
         setSize(600, 800);
         setTitle(I18n.getMessage(Message.ARRANGEMENT_TITLE));

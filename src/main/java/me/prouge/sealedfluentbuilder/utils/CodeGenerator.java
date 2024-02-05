@@ -5,6 +5,7 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Caret;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
+import me.prouge.sealedfluentbuilder.ui.AppSettingsState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -261,7 +262,10 @@ public class CodeGenerator {
     private String generateConstructor() {
         List<PsiField> allFields = getAllFields();
         StringBuilder code = new StringBuilder();
-        code.append(String.format("private %s(", context.ownerClass().getName()));
+
+        final String modifier = AppSettingsState.getInstance().constructorModifier.toString().toLowerCase();
+
+        code.append(String.format(modifier + " %s(", context.ownerClass().getName()));
         for (int i = 0; i < allFields.size() - 1; i++) {
             code.append(String.format("final %s %s, ", allFields.get(i).getType().getPresentableText(), allFields.get(i).getName()));
         }
@@ -277,7 +281,8 @@ public class CodeGenerator {
     private String generateConstructorBuilder() {
         StringBuilder code = new StringBuilder();
         List<PsiField> allFields = getAllFields();
-        code.append(String.format("public %s(final Builder builder) {\n", context.ownerClass().getName()));
+        final String modifier = AppSettingsState.getInstance().constructorWithBuilderModifier.toString().toLowerCase();
+        code.append(String.format(modifier + " %s(final Builder builder) {\n", context.ownerClass().getName()));
         allFields.forEach(field -> code.append(String.format("this.%s = builder.%s;\n", field.getName(), field.getName())));
         code.append("}\n");
         return code.toString();

@@ -1,25 +1,25 @@
 <idea-plugin>
-   <id>me.prouge.sealedfluentbuilder</id>
-   <depends>com.intellij.modules.java</depends>
-   <depends>com.intellij.java</depends>
-   <name>Sealed Fluent Builder</name>
+    <id>me.prouge.sealedfluentbuilder</id>
+    <depends>com.intellij.modules.java</depends>
+    <depends>com.intellij.java</depends>
+    <name>Sealed Fluent Builder</name>
 
-   <version>0.6</version>
+    <version>0.6</version>
 
-   <idea-version since-build="223.7571.182"/>
+    <idea-version since-build="223.7571.182"/>
 
-   <vendor email="justcrout@gmail.com" url="https://github.com/Powershooter83">Powershooter83</vendor>
+    <vendor email="justcrout@gmail.com" url="https://github.com/Powershooter83">Powershooter83</vendor>
 
-   <change-notes><![CDATA[
+    <change-notes><![CDATA[
     <h1>Version 0.6 Change Notes</h1>
 
     <ul>
         <li>Constructors are now private</li>
     </ul>
     ]]>
-   </change-notes>
+    </change-notes>
 
-   <description><![CDATA[
+    <description><![CDATA[
 <body>
     <h1>Description</h1>
 
@@ -40,18 +40,32 @@
 
     <p><strong>Note:</strong> This plugin is particularly useful for working with sealed classes and significantly enhances the readability and maintainability of your Java code.</p>
 </body>
-]]></description>
+]]>
+    </description>
 
-   <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.platform</depends>
 
-   <extensions defaultExtensionNs="com.intellij">
-   </extensions>
+    <extensions defaultExtensionNs="com.intellij">
+    </extensions>
 
-   <actions>
-      <action id="sealedfluentbuilder.action.createBuilderAction" class="me.prouge.sealedfluentbuilder.actions.CreateBuilderAction" text="Sealed Fluent Builder" description="Generate a Sealed Fluent Builder pattern!"
-              icon="/icons/icon.svg">
-         <add-to-group group-id="GenerateGroup" anchor="first"/>
-      </action>
-   </actions>
+    <actions>
+        <action id="sealedfluentbuilder.action.createBuilderAction"
+                class="me.prouge.sealedfluentbuilder.actions.CreateBuilderAction" text="Sealed Fluent Builder"
+                description="Generate a Sealed Fluent Builder pattern!"
+                icon="/icons/icon.svg">
+            <add-to-group group-id="GenerateGroup" anchor="first"/>
+        </action>
+    </actions>
+
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService
+                serviceImplementation="me.prouge.sealedfluentbuilder.ui.AppSettingsState"/>
+        <applicationConfigurable
+                parentId="tools"
+                instance="me.prouge.sealedfluentbuilder.ui.AppSettingsConfigurable"
+                id="me.prouge.sealedfluentbuilder.ui.AppSettingsConfigurable"
+                displayName="Sealed Fluent Builder"/>
+    </extensions>
 
 </idea-plugin>
