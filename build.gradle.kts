@@ -1,35 +1,60 @@
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.15.0"
+    id("org.jetbrains.intellij.platform") version "2.2.1"
 }
-
-group = "me.prouge"
-version = "0.7"
 
 repositories {
     mavenCentral()
+
+    intellijPlatform {
+        defaultRepositories()
+    }
 }
 
-intellij {
-    version.set("2022.3")
-    type.set("IC")
-    updateSinceUntilBuild.set(false)
-    plugins.set(listOf("com.intellij.java"))
+dependencies {
+    intellijPlatform {
+        intellijIdeaCommunity("2024.3.2")
+
+        bundledPlugin("com.intellij.java")
+
+        pluginVerifier()
+        zipSigner()
+    }
+
+    testImplementation("junit:junit:4.13.2")
 }
 
-tasks {
-    withType<JavaCompile> {
-        sourceCompatibility = "17"
-        targetCompatibility = "17"
-    }
 
-    signPlugin {
-        certificateChain.set(providers.environmentVariable("CERTIFICATE_CHAIN"))
-        privateKey.set(providers.environmentVariable("PRIVATE_KEY"))
-        password.set(providers.environmentVariable("PRIVATE_KEY_PASSWORD"))
-    }
 
-    publishPlugin {
-        token.set(providers.environmentVariable("PUBLISH_TOKEN"))
+intellijPlatform {
+    projectName = project.name
+    buildSearchableOptions = true
+
+    pluginConfiguration {
+        id = "me.prouge.sealedfluentbuilder"
+        name = "SealedFluentBuilder"
+        version = "1.0.0"
+        changeNotes =
+            """
+                
+                
+            """.trimIndent()
+
+        description = """
+      
+      
+        """.trimIndent()
+
+        ideaVersion {
+            sinceBuild = "243"
+            untilBuild = "243.*"
+        }
+
+
+        vendor {
+            name = "Yanick Romere"
+            email = "justcrout@gmail.com"
+            url = "https://github.com/Powershooter83"
+        }
     }
 }
