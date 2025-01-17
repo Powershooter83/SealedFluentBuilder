@@ -52,9 +52,7 @@ public class CodeGenerator {
     }
 
     private void insertGeneratedCode(int offset, String code) {
-        WriteCommandAction.runWriteCommandAction(context.project(), () -> {
-            context.editor().getDocument().insertString(offset, code);
-        });
+        WriteCommandAction.runWriteCommandAction(context.project(), () -> context.editor().getDocument().insertString(offset, code));
     }
 
     private void formatInsertedCode() {
