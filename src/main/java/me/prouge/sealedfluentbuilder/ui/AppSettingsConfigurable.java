@@ -26,8 +26,8 @@ final class AppSettingsConfigurable implements Configurable {
     @Override
     public boolean isModified() {
         AppSettingsState settings = AppSettingsState.getInstance();
-        boolean modified = mySettingsComponent.getSelectedConstructorModifier() != settings.constructorModifier;
-        modified |= mySettingsComponent.getSelectedConstructorWithBuilderModifier() != settings.constructorWithBuilderModifier;
+        boolean modified = mySettingsComponent.getSelectedConstructorModifier() != settings.getConstructorModifier();
+        modified |= mySettingsComponent.getSelectedConstructorWithBuilderModifier() != settings.getConstructorWithBuilderModifier();
         modified |= mySettingsComponent.getSelectedDropdownIndex() != settings.selectedDropdownIndex;
         return modified;
     }
@@ -35,16 +35,16 @@ final class AppSettingsConfigurable implements Configurable {
     @Override
     public void apply() {
         AppSettingsState settings = AppSettingsState.getInstance();
-        settings.constructorModifier = mySettingsComponent.getSelectedConstructorModifier();
-        settings.constructorWithBuilderModifier = mySettingsComponent.getSelectedConstructorWithBuilderModifier();
+        settings.setConstructorModifier(mySettingsComponent.getSelectedConstructorModifier());
+        settings.setConstructorWithBuilderModifier(mySettingsComponent.getSelectedConstructorWithBuilderModifier());
         settings.selectedDropdownIndex = mySettingsComponent.getSelectedDropdownIndex();
     }
 
     @Override
     public void reset() {
         AppSettingsState settings = AppSettingsState.getInstance();
-        mySettingsComponent.setSelectedConstructorModifier(settings.constructorModifier);
-        mySettingsComponent.setSelectedConstructorWithBuilderModifier(settings.constructorWithBuilderModifier);
+        mySettingsComponent.setSelectedConstructorModifier(settings.getConstructorModifier());
+        mySettingsComponent.setSelectedConstructorWithBuilderModifier(settings.getConstructorWithBuilderModifier());
         mySettingsComponent.setSelectedDropdownIndex(settings.selectedDropdownIndex);
     }
 

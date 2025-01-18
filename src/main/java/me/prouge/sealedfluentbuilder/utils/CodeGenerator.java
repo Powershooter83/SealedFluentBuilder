@@ -52,9 +52,7 @@ public class CodeGenerator {
     }
 
     private void insertGeneratedCode(int offset, String code) {
-        WriteCommandAction.runWriteCommandAction(context.project(), () -> {
-            context.editor().getDocument().insertString(offset, code);
-        });
+        WriteCommandAction.runWriteCommandAction(context.project(), () -> context.editor().getDocument().insertString(offset, code));
     }
 
     private void formatInsertedCode() {
@@ -263,7 +261,7 @@ public class CodeGenerator {
         List<PsiField> allFields = getAllFields();
         StringBuilder code = new StringBuilder();
 
-        final String modifier = AppSettingsState.getInstance().constructorModifier.toString().toLowerCase();
+        final String modifier = AppSettingsState.getInstance().getConstructorModifier().toString().toLowerCase();
 
         code.append(String.format(modifier + " %s(", context.ownerClass().getName()));
         for (int i = 0; i < allFields.size() - 1; i++) {
@@ -281,7 +279,7 @@ public class CodeGenerator {
     private String generateConstructorBuilder() {
         StringBuilder code = new StringBuilder();
         List<PsiField> allFields = getAllFields();
-        final String modifier = AppSettingsState.getInstance().constructorWithBuilderModifier.toString().toLowerCase();
+        final String modifier = AppSettingsState.getInstance().getConstructorWithBuilderModifier().toString().toLowerCase();
         code.append(String.format(modifier + " %s(final Builder builder) {\n", context.ownerClass().getName()));
         allFields.forEach(field -> code.append(String.format("this.%s = builder.%s;\n", field.getName(), field.getName())));
         code.append("}\n");
