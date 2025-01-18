@@ -51,10 +51,10 @@ public class FieldArrangementPanel extends DialogWrapper {
     }
 
     private JBList<PsiField> createPsiFieldList(final DefaultListModel<PsiField> fieldListModel) {
-        final JBList<PsiField> fieldList = new JBList<>(fieldListModel);
-        fieldList.setCellRenderer(new DefaultPsiElementCellRenderer());
-        fieldList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        return fieldList;
+        final JBList<PsiField> list = new JBList<>(fieldListModel);
+        list.setCellRenderer(new DefaultPsiElementCellRenderer());
+        list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        return list;
     }
 
     @Override

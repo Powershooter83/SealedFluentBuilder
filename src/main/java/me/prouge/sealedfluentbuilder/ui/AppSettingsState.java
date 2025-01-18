@@ -15,8 +15,8 @@ import org.jetbrains.annotations.Nullable;
 )
 public final class AppSettingsState implements PersistentStateComponent<AppSettingsState> {
 
-    public ConstructorModifier constructorModifier = ConstructorModifier.PRIVATE;
-    public ConstructorModifier constructorWithBuilderModifier = ConstructorModifier.PRIVATE;
+    private ConstructorModifier constructorModifier = ConstructorModifier.PRIVATE;
+    private ConstructorModifier constructorWithBuilderModifier = ConstructorModifier.PRIVATE;
 
     public int selectedDropdownIndex = 0;
 
@@ -34,6 +34,22 @@ public final class AppSettingsState implements PersistentStateComponent<AppSetti
     @Override
     public void loadState(@NotNull AppSettingsState state) {
         XmlSerializerUtil.copyBean(state, this);
+    }
+
+    public ConstructorModifier getConstructorModifier() {
+        return constructorModifier;
+    }
+
+    public void setConstructorModifier(ConstructorModifier constructorModifier) {
+        this.constructorModifier = constructorModifier;
+    }
+
+    public ConstructorModifier getConstructorWithBuilderModifier() {
+        return constructorWithBuilderModifier;
+    }
+
+    public void setConstructorWithBuilderModifier(ConstructorModifier constructorWithBuilderModifier) {
+        this.constructorWithBuilderModifier = constructorWithBuilderModifier;
     }
 
 }
