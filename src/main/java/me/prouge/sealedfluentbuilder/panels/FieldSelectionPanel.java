@@ -29,7 +29,7 @@ public class FieldSelectionPanel extends DialogWrapper {
         fieldList = loadClassFields(context.ownerClass());
         selectAllFields();
         setSize(600, 400);
-        setTitle(I18n.getMessage(Message.SELECTION_TITLE));
+        setTitle(I18n.getMessage(Message.PANEL_TITLE));
         init();
     }
 
