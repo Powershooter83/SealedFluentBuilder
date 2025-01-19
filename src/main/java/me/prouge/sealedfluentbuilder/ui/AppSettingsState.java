@@ -20,6 +20,8 @@ public final class AppSettingsState implements PersistentStateComponent<AppSetti
 
     public int selectedDropdownIndex = 0;
 
+    public String prefix = "";
+
 
     public static AppSettingsState getInstance() {
         return ApplicationManager.getApplication().getService(AppSettingsState.class);
@@ -52,4 +54,7 @@ public final class AppSettingsState implements PersistentStateComponent<AppSetti
         this.constructorWithBuilderModifier = constructorWithBuilderModifier;
     }
 
+    public void setPrefix(final String prefix) {
+        this.prefix = prefix;
+    }
 }

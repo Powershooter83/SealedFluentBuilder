@@ -23,6 +23,9 @@ public class AppSettingsComponent {
 
     final JComboBox<String> dropdown = new JComboBox<>(new String[]{"Constructor", "Constructor with builder", "With setters"});
 
+    final JTextField prefixTextField = new JTextField();
+
+
     public AppSettingsComponent() {
         constructorGroup.add(constructorPublicRadioButton);
         constructorGroup.add(constructorProtectedRadioButton);
@@ -51,10 +54,18 @@ public class AppSettingsComponent {
         panel.add(new JLabel("Default selected builder type: "));
         panel.add(dropdown);
 
+        final JPanel prefixPanel = new JPanel();
+        prefixPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        prefixPanel.add(new JLabel("Prefix for builder method: "));
+        prefixTextField.setColumns(20);
+        prefixPanel.add(prefixTextField);
+
+
         myMainPanel = FormBuilder.createFormBuilder()
                 .addComponent(constructorRadioButtonPanel)
                 .addComponent(constructorWithBuilderRadioButtonPanel)
                 .addComponent(panel)
+                .addComponent(prefixPanel)
                 .addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
     }
@@ -125,4 +136,14 @@ public class AppSettingsComponent {
     public void setSelectedDropdownIndex(final int selectedDropdownIndex) {
         this.dropdown.setSelectedIndex(selectedDropdownIndex);
     }
+
+    public String getPrefix() {
+        return this.prefixTextField.getText();
+    }
+
+    public void setPrefix(final String prefix) {
+        this.prefixTextField.setText(prefix);
+    }
+
+
 }

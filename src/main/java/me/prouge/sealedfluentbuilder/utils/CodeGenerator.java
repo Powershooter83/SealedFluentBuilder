@@ -22,11 +22,15 @@ public class CodeGenerator {
 
     private final GenerationType generationType;
 
+    private final String prefix;
+
     public CodeGenerator(final PluginContext context, final List<PsiField> requiredFields, final List<PsiField> optionalFields, final GenerationType generationType) {
         this.context = context;
         this.requiredFields = requiredFields;
         this.optionalFields = optionalFields;
         this.generationType = generationType;
+
+        this.prefix = Objects.requireNonNull(AppSettingsState.getInstance().getState()).prefix.trim();
 
         generateBuilderCode();
     }
@@ -65,14 +69,14 @@ public class CodeGenerator {
         final String fieldName = requiredFields.get(0).getName();
         return "public static " + toUppercase(requiredFields.get(1).getName()) + "Builder"
                 + " "
-                + fieldName
+                + getFieldNameFormatted(fieldName)
                 + "(final " +
                 requiredFields.get(0).getType().getPresentableText() +
                 " " +
                 fieldName +
                 ") {\n" +
                 "return new Builder()." +
-                fieldName + "(" +
+                getFieldNameFormatted(fieldName) + "(" +
                 fieldName + ");\n}\n";
     }
 
@@ -89,7 +93,7 @@ public class CodeGenerator {
                     .append(toUppercase(nextField.getName()))
                     .append("Builder")
                     .append(" ")
-                    .append(field.getName())
+                    .append(getFieldNameFormatted(field.getName()))
                     .append("(final ")
                     .append(field.getType().getPresentableText())
                     .append(" ")
@@ -105,7 +109,7 @@ public class CodeGenerator {
                 .append(" permits Builder {\n\n")
                 .append(context.ownerClass().getName())
                 .append("Creator ")
-                .append(fieldName)
+                .append(getFieldNameFormatted(fieldName))
                 .append("(final ")
                 .append(requiredFields.get(requiredFields.size() - 1).getType().getPresentableText())
                 .append(" ")
@@ -124,7 +128,7 @@ public class CodeGenerator {
                                 .map(field -> String.format(
                                         "%s %s(final %s %s);",
                                         creatorName,
-                                        field.getName(),
+                                        getFieldNameFormatted(field.getName()),
                                         field.getType().getPresentableText(),
                                         field.getName()
                                 ))
@@ -162,14 +166,14 @@ public class CodeGenerator {
         code.append("""
                 private Builder() {
                 }
-
+                
                 private %sBuilder %s(final %s %s) {
                     this.%s = %s;
                     return this;
                 }
                 """.formatted(
                 toUppercase(requiredFields.get(1).getName()),
-                requiredFields.get(0).getName(),
+                getFieldNameFormatted(requiredFields.get(0).getName()),
                 requiredFields.get(0).getType().getPresentableText(),
                 requiredFields.get(0).getName(),
                 requiredFields.get(0).getName(),
@@ -188,7 +192,7 @@ public class CodeGenerator {
                     }
                     """.formatted(
                     toUppercase(nextField.getName()),
-                    field.getName(),
+                    getFieldNameFormatted(field.getName()),
                     field.getType().getPresentableText(),
                     field.getName(),
                     field.getName(),
@@ -207,7 +211,7 @@ public class CodeGenerator {
                 }
                 """.formatted(
                 creatorName,
-                lastField.getName(),
+                getFieldNameFormatted(lastField.getName()),
                 lastField.getType().getPresentableText(),
                 lastField.getName(),
                 lastField.getName(),
@@ -223,7 +227,7 @@ public class CodeGenerator {
                     }
                     """.formatted(
                     creatorName,
-                    field.getName(),
+                    getFieldNameFormatted(field.getName()),
                     field.getType().getPresentableText(),
                     field.getName(),
                     field.getName(),
@@ -318,7 +322,7 @@ public class CodeGenerator {
                 @Override
                 public %s build() {
                     final %s %s = new %s();
-                    """.formatted(
+                """.formatted(
                 context.ownerClass().getName(),
                 context.ownerClass().getName(),
                 className,
@@ -380,6 +384,20 @@ public class CodeGenerator {
                 .append("\n}\n").toString();
     }
 
+    private String getFieldNameFormatted(String name) {
+        if (prefix.isBlank()) {
+            return name;
+        }
+        return prefix + capitalizeFirstLetter(name);
+    }
+
+
+    private String capitalizeFirstLetter(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+        return input.substring(0, 1).toUpperCase() + input.substring(1);
+    }
 
 }
 
