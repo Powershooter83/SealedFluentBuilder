@@ -35,30 +35,39 @@ public class AppSettingsComponent {
         constructorWithBuilderGroup.add(constructorWithBuilderProtectedRadioButton);
         constructorWithBuilderGroup.add(constructorWithBuilderPrivateRadioButton);
 
-        final JPanel constructorRadioButtonPanel = new JPanel();
-        constructorRadioButtonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        constructorRadioButtonPanel.add(new JLabel("Constructor:                       "));
-        constructorRadioButtonPanel.add(constructorPublicRadioButton);
-        constructorRadioButtonPanel.add(constructorProtectedRadioButton);
-        constructorRadioButtonPanel.add(constructorPrivateRadioButton);
+        final JPanel constructorRadioButtonPanel = new JPanel(new BorderLayout());
+        constructorRadioButtonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 100));
+        constructorRadioButtonPanel.add(new JLabel("Constructor:"), BorderLayout.WEST);
 
-        final JPanel constructorWithBuilderRadioButtonPanel = new JPanel();
-        constructorWithBuilderRadioButtonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        constructorWithBuilderRadioButtonPanel.add(new JLabel("Constructor with builder: "));
-        constructorWithBuilderRadioButtonPanel.add(constructorWithBuilderPublicRadioButton);
-        constructorWithBuilderRadioButtonPanel.add(constructorWithBuilderProtectedRadioButton);
-        constructorWithBuilderRadioButtonPanel.add(constructorWithBuilderPrivateRadioButton);
+        JPanel constructorRadioButtonPanelRadios = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        constructorRadioButtonPanelRadios.add(constructorPublicRadioButton);
+        constructorRadioButtonPanelRadios.add(constructorProtectedRadioButton);
+        constructorRadioButtonPanelRadios.add(constructorPrivateRadioButton);
+        constructorRadioButtonPanel.add(constructorRadioButtonPanelRadios, BorderLayout.EAST);
 
-        final JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        panel.add(new JLabel("Default selected builder type: "));
-        panel.add(dropdown);
 
-        final JPanel prefixPanel = new JPanel();
-        prefixPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        prefixPanel.add(new JLabel("Prefix for builder method: "));
-        prefixTextField.setColumns(20);
-        prefixPanel.add(prefixTextField);
+        final JPanel constructorWithBuilderRadioButtonPanel = new JPanel(new BorderLayout());
+
+        JPanel constructorWithBuilderRadioButtonPanelRadios = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        constructorWithBuilderRadioButtonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 100));
+        constructorWithBuilderRadioButtonPanel.add(new JLabel("Constructor with builder:"), BorderLayout.WEST);
+
+        constructorWithBuilderRadioButtonPanelRadios.add(constructorWithBuilderPublicRadioButton);
+        constructorWithBuilderRadioButtonPanelRadios.add(constructorWithBuilderProtectedRadioButton);
+        constructorWithBuilderRadioButtonPanelRadios.add(constructorWithBuilderPrivateRadioButton);
+        constructorWithBuilderRadioButtonPanel.add(constructorWithBuilderRadioButtonPanelRadios, BorderLayout.EAST);
+
+        final JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 100));
+        panel.add(new JLabel("Default selected builder type:"), BorderLayout.WEST);
+        panel.add(dropdown, BorderLayout.EAST);
+
+        final JPanel prefixPanel = new JPanel(new BorderLayout());
+        prefixPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 100));
+        prefixPanel.add(new JLabel("Prefix for builder method:"), BorderLayout.WEST);
+
+        prefixTextField.setColumns(18);
+        prefixPanel.add(prefixTextField, BorderLayout.EAST);
 
 
         myMainPanel = FormBuilder.createFormBuilder()
