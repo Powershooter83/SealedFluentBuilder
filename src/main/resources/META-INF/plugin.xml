@@ -1,17 +1,19 @@
 <idea-plugin>
     <id>me.prouge.sealedfluentbuilder</id>
-    <depends>com.intellij.modules.java</depends>
-    <depends>com.intellij.java</depends>
     <name>Sealed Fluent Builder</name>
 
-    <version>1.0.0</version>
-
-    <idea-version since-build="223.7571.182"/>
+    <depends>com.intellij.modules.java</depends>
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.java</depends>
+    <extensions defaultExtensionNs="com.intellij"/>
 
     <vendor email="justcrout@gmail.com" url="https://github.com/Powershooter83">Powershooter83</vendor>
 
+    <version>0.8</version>
+    <idea-version since-build="223.7571.182"/>
+
     <change-notes><![CDATA[
-    <h1>Version 1.0.0 Change Notes</h1>
+    <h1>Version 0.8 Change Notes</h1>
 
     <ul>
         <li>Add custom prefix to the build methods!</li>
@@ -44,10 +46,6 @@
 ]]>
     </description>
 
-    <depends>com.intellij.modules.platform</depends>
-
-    <extensions defaultExtensionNs="com.intellij">
-    </extensions>
 
     <actions>
         <action id="sealedfluentbuilder.action.createBuilderAction"

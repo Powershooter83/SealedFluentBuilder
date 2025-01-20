@@ -32,17 +32,7 @@ intellijPlatform {
     pluginConfiguration {
         id = "me.prouge.sealedfluentbuilder"
         name = "SealedFluentBuilder"
-        version = "1.0.0"
-        changeNotes =
-            """
-                
-                
-            """.trimIndent()
-
-        description = """
-      
-      
-        """.trimIndent()
+        version = "0.8"
 
         ideaVersion {
             sinceBuild = "243"
@@ -56,4 +46,5 @@ intellijPlatform {
             url = "https://github.com/Powershooter83"
         }
     }
+
 }
