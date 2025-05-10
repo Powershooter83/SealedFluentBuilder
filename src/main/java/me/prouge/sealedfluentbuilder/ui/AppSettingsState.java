@@ -17,6 +17,7 @@ public final class AppSettingsState implements PersistentStateComponent<AppSetti
 
     private ConstructorModifier constructorModifier = ConstructorModifier.PRIVATE;
     private ConstructorModifier constructorWithBuilderModifier = ConstructorModifier.PRIVATE;
+    private ConstructorModifier builderModifier = ConstructorModifier.PRIVATE;
 
     public int selectedDropdownIndex = 0;
 
@@ -40,6 +41,14 @@ public final class AppSettingsState implements PersistentStateComponent<AppSetti
 
     public ConstructorModifier getConstructorModifier() {
         return constructorModifier;
+    }
+
+    public ConstructorModifier getBuilderModifier() {
+        return builderModifier;
+    }
+
+    public void setBuilderModifier(ConstructorModifier builderModifier) {
+        this.builderModifier = builderModifier;
     }
 
     public void setConstructorModifier(ConstructorModifier constructorModifier) {

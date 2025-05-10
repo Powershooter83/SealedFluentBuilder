@@ -18,8 +18,13 @@ public class AppSettingsComponent {
     final JRadioButton constructorWithBuilderProtectedRadioButton = new JRadioButton("protected");
     final JRadioButton constructorWithBuilderPrivateRadioButton = new JRadioButton("private");
 
+    final JRadioButton builderPublicRadioButton = new JRadioButton("public");
+    final JRadioButton builderProtectedRadioButton = new JRadioButton("protected");
+    final JRadioButton builderPrivateRadioButton = new JRadioButton("private");
+
     final ButtonGroup constructorGroup = new ButtonGroup();
     final ButtonGroup constructorWithBuilderGroup = new ButtonGroup();
+    final ButtonGroup builderGroup = new ButtonGroup();
 
     final JComboBox<String> dropdown = new JComboBox<>(new String[]{"Constructor", "Constructor with builder", "With setters"});
 
@@ -34,6 +39,10 @@ public class AppSettingsComponent {
         constructorWithBuilderGroup.add(constructorWithBuilderPublicRadioButton);
         constructorWithBuilderGroup.add(constructorWithBuilderProtectedRadioButton);
         constructorWithBuilderGroup.add(constructorWithBuilderPrivateRadioButton);
+
+        builderGroup.add(builderPublicRadioButton);
+        builderGroup.add(builderProtectedRadioButton);
+        builderGroup.add(builderPrivateRadioButton);
 
         final JPanel constructorRadioButtonPanel = new JPanel(new BorderLayout());
         constructorRadioButtonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 100));
@@ -57,6 +66,17 @@ public class AppSettingsComponent {
         constructorWithBuilderRadioButtonPanelRadios.add(constructorWithBuilderPrivateRadioButton);
         constructorWithBuilderRadioButtonPanel.add(constructorWithBuilderRadioButtonPanelRadios, BorderLayout.EAST);
 
+        final JPanel builderRadioButtonPanel = new JPanel(new BorderLayout());
+
+        JPanel builderRadioButtonPanelRadios = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        builderRadioButtonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 100));
+        builderRadioButtonPanel.add(new JLabel("Builder:"), BorderLayout.WEST);
+
+        builderRadioButtonPanelRadios.add(builderPublicRadioButton);
+        builderRadioButtonPanelRadios.add(builderProtectedRadioButton);
+        builderRadioButtonPanelRadios.add(builderPrivateRadioButton);
+        builderRadioButtonPanel.add(builderRadioButtonPanelRadios, BorderLayout.EAST);
+
         final JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 100));
         panel.add(new JLabel("Default selected builder type:"), BorderLayout.WEST);
@@ -73,6 +93,7 @@ public class AppSettingsComponent {
         myMainPanel = FormBuilder.createFormBuilder()
                 .addComponent(constructorRadioButtonPanel)
                 .addComponent(constructorWithBuilderRadioButtonPanel)
+                .addComponent(builderRadioButtonPanel)
                 .addComponent(panel)
                 .addComponent(prefixPanel)
                 .addComponentFillVertically(new JPanel(), 0)
@@ -99,6 +120,16 @@ public class AppSettingsComponent {
             return ConstructorModifier.PUBLIC;
         }
         if (constructorWithBuilderProtectedRadioButton.isSelected()) {
+            return ConstructorModifier.PROTECTED;
+        }
+        return ConstructorModifier.PRIVATE;
+    }
+
+    public ConstructorModifier getSelectedBuilderModifier() {
+        if (builderPublicRadioButton.isSelected()) {
+            return ConstructorModifier.PUBLIC;
+        }
+        if (builderProtectedRadioButton.isSelected()) {
             return ConstructorModifier.PROTECTED;
         }
         return ConstructorModifier.PRIVATE;
@@ -137,6 +168,24 @@ public class AppSettingsComponent {
         }
 
     }
+
+    public void setSelectedBuilderModifier(final ConstructorModifier modifier) {
+        this.builderPublicRadioButton.setSelected(false);
+        this.builderProtectedRadioButton.setSelected(false);
+        this.builderPrivateRadioButton.setSelected(false);
+
+        if (modifier == ConstructorModifier.PUBLIC) {
+            this.builderPublicRadioButton.setSelected(true);
+        }
+        if (modifier == ConstructorModifier.PROTECTED) {
+            this.builderProtectedRadioButton.setSelected(true);
+        }
+        if (modifier == ConstructorModifier.PRIVATE) {
+            this.builderPrivateRadioButton.setSelected(true);
+        }
+
+    }
+
 
     public int getSelectedDropdownIndex() {
         return this.dropdown.getSelectedIndex();

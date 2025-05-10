@@ -9,13 +9,15 @@
 
     <vendor email="justcrout@gmail.com" url="https://github.com/Powershooter83">Powershooter83</vendor>
 
-    <version>0.8</version>
+    <version>0.9.1</version>
 
     <change-notes><![CDATA[
-    <h1>Version 0.8 Change Notes</h1>
+    <h1>Version 0.9 Change Notes</h1>
 
     <ul>
-        <li>Add custom prefix to the build methods!</li>
+        <li>Added option to configure the visibility (public, protected, private) of the builder class.</li>
+        <li>Builder setter methods are now always public.</li>
+        <li>Builder setters now return the full builder instead of step interfaces.</li>
     </ul>
     ]]>
     </change-notes>

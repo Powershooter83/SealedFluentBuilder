@@ -28,11 +28,13 @@ dependencies {
 intellijPlatform {
     projectName = project.name
     buildSearchableOptions = true
+    instrumentCode = false
 
     pluginConfiguration {
 
         ideaVersion {
             sinceBuild = "233.3"
+            untilBuild = "251.*"
         }
 
     }

@@ -75,7 +75,9 @@ public class CodeGenerator {
                 " " +
                 fieldName +
                 ") {\n" +
-                "return new Builder()." +
+                "return new " +
+                context.ownerClass().getName() +
+                "Builder()." +
                 getFieldNameFormatted(fieldName) + "(" +
                 fieldName + ");\n}\n";
     }
@@ -89,7 +91,7 @@ public class CodeGenerator {
 
             code.append("public sealed interface ")
                     .append(toUppercase(field.getName()))
-                    .append("Builder permits Builder {\n\n")
+                    .append(String.format("Builder permits %sBuilder {\n\n", context.ownerClass().getName()))
                     .append(toUppercase(nextField.getName()))
                     .append("Builder")
                     .append(" ")
@@ -106,7 +108,7 @@ public class CodeGenerator {
         code.append("public sealed interface ")
                 .append(toUppercase(fieldName))
                 .append("Builder")
-                .append(" permits Builder {\n\n")
+                .append(String.format(" permits %sBuilder {\n\n", context.ownerClass().getName()))
                 .append(context.ownerClass().getName())
                 .append("Creator ")
                 .append(getFieldNameFormatted(fieldName))
@@ -123,7 +125,7 @@ public class CodeGenerator {
     private String optionalInterfaceBuilder() {
         final String creatorName = context.ownerClass().getName() + "Creator";
         return Stream.concat(
-                        Stream.of("public sealed interface " + creatorName + " permits Builder {"),
+                        Stream.of(String.format("public sealed interface " + creatorName + " permits %sBuilder {", context.ownerClass().getName())),
                         optionalFields.stream()
                                 .map(field -> String.format(
                                         "%s %s(final %s %s);",
@@ -138,7 +140,10 @@ public class CodeGenerator {
 
     private String builderClassBuilder() {
         StringBuilder code = new StringBuilder();
-        code.append("private static final class Builder implements ");
+
+        final String modifier = AppSettingsState.getInstance().getBuilderModifier().toString().toLowerCase();
+
+        code.append(String.format("%s static final class %sBuilder implements ", modifier, context.ownerClass().getName()));
         for (int i = 1; i < requiredFields.size(); i++) {
             code.append(toUppercase(requiredFields.get(i).getName()))
                     .append("Builder, ");
@@ -164,15 +169,16 @@ public class CodeGenerator {
         }
 
         code.append("""
-                private Builder() {
+                private %sBuilder() {
                 }
                 
-                private %sBuilder %s(final %s %s) {
+                public %sBuilder %s(final %s %s) {
                     this.%s = %s;
                     return this;
                 }
                 """.formatted(
-                toUppercase(requiredFields.get(1).getName()),
+                context.ownerClass().getName(),
+                context.ownerClass().getName(),
                 getFieldNameFormatted(requiredFields.get(0).getName()),
                 requiredFields.get(0).getType().getPresentableText(),
                 requiredFields.get(0).getName(),
@@ -182,7 +188,6 @@ public class CodeGenerator {
 
         IntStream.range(1, requiredFields.size() - 1).forEach(i -> {
             PsiField field = requiredFields.get(i);
-            PsiField nextField = requiredFields.get(i + 1);
 
             code.append("""
                     @Override
@@ -191,7 +196,7 @@ public class CodeGenerator {
                         return this;
                     }
                     """.formatted(
-                    toUppercase(nextField.getName()),
+                    context.ownerClass().getName(),
                     getFieldNameFormatted(field.getName()),
                     field.getType().getPresentableText(),
                     field.getName(),
@@ -200,7 +205,6 @@ public class CodeGenerator {
             ));
         });
 
-        final String creatorName = context.ownerClass().getName() + "Creator";
         final PsiField lastField = requiredFields.get(requiredFields.size() - 1);
 
         code.append("""
@@ -210,7 +214,7 @@ public class CodeGenerator {
                     return this;
                 }
                 """.formatted(
-                creatorName,
+                        context.ownerClass().getName() + "Builder",
                 getFieldNameFormatted(lastField.getName()),
                 lastField.getType().getPresentableText(),
                 lastField.getName(),
@@ -226,7 +230,7 @@ public class CodeGenerator {
                         return this;
                     }
                     """.formatted(
-                    creatorName,
+                    context.ownerClass().getName() + "Builder",
                     getFieldNameFormatted(field.getName()),
                     field.getType().getPresentableText(),
                     field.getName(),

@@ -28,6 +28,7 @@ final class AppSettingsConfigurable implements Configurable {
         AppSettingsState settings = AppSettingsState.getInstance();
         boolean modified = mySettingsComponent.getSelectedConstructorModifier() != settings.getConstructorModifier();
         modified |= mySettingsComponent.getSelectedConstructorWithBuilderModifier() != settings.getConstructorWithBuilderModifier();
+        modified |= mySettingsComponent.getSelectedBuilderModifier() != settings.getBuilderModifier();
         modified |= mySettingsComponent.getSelectedDropdownIndex() != settings.selectedDropdownIndex;
         modified |= !mySettingsComponent.getPrefix().equals(settings.prefix);
         return modified;
@@ -38,6 +39,7 @@ final class AppSettingsConfigurable implements Configurable {
         AppSettingsState settings = AppSettingsState.getInstance();
         settings.setConstructorModifier(mySettingsComponent.getSelectedConstructorModifier());
         settings.setConstructorWithBuilderModifier(mySettingsComponent.getSelectedConstructorWithBuilderModifier());
+        settings.setBuilderModifier(mySettingsComponent.getSelectedBuilderModifier());
         settings.selectedDropdownIndex = mySettingsComponent.getSelectedDropdownIndex();
         settings.setPrefix(mySettingsComponent.getPrefix());
     }
@@ -47,6 +49,7 @@ final class AppSettingsConfigurable implements Configurable {
         AppSettingsState settings = AppSettingsState.getInstance();
         mySettingsComponent.setSelectedConstructorModifier(settings.getConstructorModifier());
         mySettingsComponent.setSelectedConstructorWithBuilderModifier(settings.getConstructorWithBuilderModifier());
+        mySettingsComponent.setSelectedBuilderModifier(settings.getBuilderModifier());
         mySettingsComponent.setSelectedDropdownIndex(settings.selectedDropdownIndex);
         mySettingsComponent.setPrefix(settings.prefix);
     }
