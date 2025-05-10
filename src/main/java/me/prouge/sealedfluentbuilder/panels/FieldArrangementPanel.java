@@ -1,5 +1,6 @@
 package me.prouge.sealedfluentbuilder.panels;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.ide.util.DefaultPsiElementCellRenderer;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -78,7 +79,7 @@ public class FieldArrangementPanel extends DialogWrapper {
         panel.add(Box.createVerticalStrut(10));
 
         panel.add(createToolbar(fieldList)
-                .addExtraAction(new AnAction(I18n.getMessage(Message.BUTTON_DOWN_LABEL)) {
+                .addExtraAction(new AnAction(I18n.getMessage(Message.BUTTON_DOWN_LABEL), "", AllIcons.RunConfigurations.Scroll_down) {
                     @Override
                     public void actionPerformed(@NotNull AnActionEvent e) {
                         moveFields(fieldList, fieldListModel, optionalFieldListModel);
@@ -90,7 +91,7 @@ public class FieldArrangementPanel extends DialogWrapper {
         panel.add(Box.createVerticalStrut(10));
 
         panel.add(createToolbar(optionalFieldList)
-                .addExtraAction(new AnAction(I18n.getMessage(Message.BUTTON_UP_LABEL)) {
+                .addExtraAction(new AnAction(I18n.getMessage(Message.BUTTON_UP_LABEL), "", AllIcons.RunConfigurations.Scroll_up) {
                     @Override
                     public void actionPerformed(@NotNull AnActionEvent e) {
                         moveFields(optionalFieldList, optionalFieldListModel, fieldListModel);

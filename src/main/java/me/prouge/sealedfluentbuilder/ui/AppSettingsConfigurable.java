@@ -29,6 +29,7 @@ final class AppSettingsConfigurable implements Configurable {
         boolean modified = mySettingsComponent.getSelectedConstructorModifier() != settings.getConstructorModifier();
         modified |= mySettingsComponent.getSelectedConstructorWithBuilderModifier() != settings.getConstructorWithBuilderModifier();
         modified |= mySettingsComponent.getSelectedDropdownIndex() != settings.selectedDropdownIndex;
+        modified |= !mySettingsComponent.getPrefix().equals(settings.prefix);
         return modified;
     }
 
@@ -38,6 +39,7 @@ final class AppSettingsConfigurable implements Configurable {
         settings.setConstructorModifier(mySettingsComponent.getSelectedConstructorModifier());
         settings.setConstructorWithBuilderModifier(mySettingsComponent.getSelectedConstructorWithBuilderModifier());
         settings.selectedDropdownIndex = mySettingsComponent.getSelectedDropdownIndex();
+        settings.setPrefix(mySettingsComponent.getPrefix());
     }
 
     @Override
@@ -46,6 +48,7 @@ final class AppSettingsConfigurable implements Configurable {
         mySettingsComponent.setSelectedConstructorModifier(settings.getConstructorModifier());
         mySettingsComponent.setSelectedConstructorWithBuilderModifier(settings.getConstructorWithBuilderModifier());
         mySettingsComponent.setSelectedDropdownIndex(settings.selectedDropdownIndex);
+        mySettingsComponent.setPrefix(settings.prefix);
     }
 
     @Override

@@ -2,6 +2,7 @@ package me.prouge.sealedfluentbuilder.utils;
 
 public enum Message {
 
+    PANEL_TITLE,
     SELECTION_TITLE,
     ARRANGEMENT_TITLE,
     REQUIRED_FIELDS_ERROR,

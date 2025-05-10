@@ -1,20 +1,21 @@
 <idea-plugin>
     <id>me.prouge.sealedfluentbuilder</id>
-    <depends>com.intellij.modules.java</depends>
-    <depends>com.intellij.java</depends>
     <name>Sealed Fluent Builder</name>
 
-    <version>0.7</version>
-
-    <idea-version since-build="223.7571.182"/>
+    <depends>com.intellij.modules.java</depends>
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.java</depends>
+    <extensions defaultExtensionNs="com.intellij"/>
 
     <vendor email="justcrout@gmail.com" url="https://github.com/Powershooter83">Powershooter83</vendor>
 
+    <version>0.8</version>
+
     <change-notes><![CDATA[
-    <h1>Version 0.7 Change Notes</h1>
+    <h1>Version 0.8 Change Notes</h1>
 
     <ul>
-        <li>Added configuration page</li>
+        <li>Add custom prefix to the build methods!</li>
     </ul>
     ]]>
     </change-notes>
@@ -30,6 +31,7 @@
     <ul>
         <li><strong>Automatic Generation:</strong> Automatically create builder classes for your Java classes.</li>
         <li><strong>Flexible Configuration:</strong> Choose required and optional fields and define the order in which they should be set in the builder.</li>
+        <li><strong>Custom prefix:</strong> Add custom prefix to the build methods!</li><
         <li><strong>Seamless Integration:</strong> Access the plugin via the familiar IntelliJ "Generate" menu.</li>
         <li><strong>Time Savings:</strong> Accelerate development by automating repetitive tasks.</li>
     </ul>
@@ -43,10 +45,6 @@
 ]]>
     </description>
 
-    <depends>com.intellij.modules.platform</depends>
-
-    <extensions defaultExtensionNs="com.intellij">
-    </extensions>
 
     <actions>
         <action id="sealedfluentbuilder.action.createBuilderAction"

@@ -30,30 +30,11 @@ intellijPlatform {
     buildSearchableOptions = true
 
     pluginConfiguration {
-        id = "me.prouge.sealedfluentbuilder"
-        name = "SealedFluentBuilder"
-        version = "1.0.0"
-        changeNotes =
-            """
-                
-                
-            """.trimIndent()
-
-        description = """
-      
-      
-        """.trimIndent()
 
         ideaVersion {
-            sinceBuild = "243"
-            untilBuild = "243.*"
+            sinceBuild = "233.3"
         }
 
-
-        vendor {
-            name = "Yanick Romere"
-            email = "justcrout@gmail.com"
-            url = "https://github.com/Powershooter83"
-        }
     }
+
 }
