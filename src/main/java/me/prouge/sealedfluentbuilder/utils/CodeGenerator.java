@@ -288,7 +288,7 @@ public class CodeGenerator {
         StringBuilder code = new StringBuilder();
         List<PsiField> allFields = getAllFields();
         final String modifier = AppSettingsState.getInstance().getConstructorWithBuilderModifier().toString().toLowerCase();
-        code.append(String.format(modifier + " %s(final Builder builder) {\n", context.ownerClass().getName()));
+        code.append(String.format(modifier + " %s(final %sBuilder builder) {\n", context.ownerClass().getName(), context.ownerClass().getName()));
         allFields.forEach(field -> code.append(String.format("this.%s = builder.%s;\n", field.getName(), field.getName())));
         code.append("}\n");
         return code.toString();
